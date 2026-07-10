@@ -15,7 +15,7 @@
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const API_URL = "https://script.google.com/macros/s/AKfycbx28-AW1xATsjk2WwMiyd3s5M1oP_TuWzSsJRoBKytXSwHNUHPa5Mq0vYAD2vfejeMY/exec";
+    const API_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
     let semuaSiswa = [];
 </script>
 
@@ -24,6 +24,16 @@
         <h1 class="fs-4 text-primary fw-bold">🚀 Workspace Administrasi Guru</h1>
         <span class="text-muted">Fokus pada Murid, Otomatiskan Administrasi</span>
     </header>
+
+    <div class="card p-3 mb-4 shadow-sm border-start border-warning border-4">
+        <h5 class="fw-bold text-warning">📁 Upload / Perbarui Data Siswa Sekolah</h5>
+        <p class="text-muted small">Punya data siswa baru dari sekolah? Upload file `.csv` atau Excel yang sudah di-save as `.csv` di sini. Sistem akan otomatis menyaring dan memasukkannya ke database.</p>
+        <div class="input-group">
+            <input type="file" class="form-control" id="fileSiswa" accept=".csv">
+            <button class="btn btn-warning fw-bold" type="button" onclick="prosesUploadCsv()">⚡ Proses & Sinkronkan</button>
+        </div>
+        <div id="statusUpload" class="small mt-2 fw-bold text-success"></div>
+    </div>
 
     <div class="row g-3 mb-4">
         <div class="col-md-6">
@@ -44,7 +54,7 @@
         <div class="row align-items-center">
             <div class="col-md-4">
                 <label class="form-label fw-bold">Pilih Kelas Penyaringan:</label>
-                <select class="form-select" id="pilihKelas" onchange="saringSiswa PerKelas()">
+                <select class="form-select" id="pilihKelas" onchange="saringSiswaPerKelas()">
                     <option value="">-- Memuat Kelas... --</option>
                 </select>
             </div>
@@ -62,8 +72,7 @@
         <div class="table-responsive p-3">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
-                    <tr id="headerTabel">
-                        </tr>
+                    <tr id="headerTabel"></tr>
                 </thead>
                 <tbody id="badanTabel">
                     <tr>
@@ -76,9 +85,63 @@
 </div>
 
 <script>
-    let modeAktif = 'wali'; // default mode
+    let modeAktif = 'wali';
 
-    // 1. Ambil data dari Google Sheets saat web dibuka
+    // 1. FUNGSI MEMBACA DAN PROSES FILE CSV YANG DIUPLOAD
+    function prosesUploadCsv() {
+        const fileInput = document.getElementById('fileSiswa');
+        const statusDiv = document.getElementById('statusUpload');
+        
+        if (fileInput.files.length === 0) {
+            alert('Silakan pilih file CSV data siswa terlebih dahulu!');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        statusDiv.innerText = "Sedang membaca file...";
+        
+        reader.onload = async function(e) {
+            const teks = e.target.result;
+            const baris = teks.split('\n');
+            
+            statusDiv.innerText = "Sedang mengirim data ke Google Sheets (Tunggu sebentar)...";
+            
+            // Loop data mulai dari baris ke-2 (mengabaikan header file)
+            let jumlahSukses = 0;
+            for (let i = 1; i < baris.length; i++) {
+                if (!baris[i].trim()) continue;
+                
+                // Memisah kolom (asumsi pemisah koma)
+                let kolom = baris[i].split(','); 
+                
+                // Sesuaikan urutan kolom dari file sekolah Anda:
+                // Urut, Rombel, Kelas, NISN, NIS, Nama Lengkap
+                let kelas = kolom[2] ? kolom[2].trim() : "";
+                let nis = kolom[4] ? kolom[4].trim() : "";
+                let nama = kolom[5] ? kolom[5].trim() : "";
+                
+                if (!nis || !nama) continue;
+
+                let dataKirim = {
+                    action: "tambahSiswa",
+                    data: { nis: nis, nama: nama, kelas: kelas, noHp: "628xxxxxxxx" } // No HP default dummy
+                };
+
+                // Kirim satu per satu ke API Google Sheets Anda
+                await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
+                jumlahSukses++;
+            }
+
+            statusDiv.innerText = `✅ Berhasil mengunggah ${jumlahSukses} data siswa baru secara otomatis!`;
+            muatDataSiswa(); // Refresh tampilan tabel
+        };
+
+        reader.readAsText(file);
+    }
+
+    // 2. Ambil data dari Google Sheets
     async function muatDataSiswa() {
         document.getElementById('badanTabel').innerHTML = `<tr><td colspan="5" class="text-center">Mengambil data dari Google Sheet...</td></tr>`;
         try {
@@ -87,26 +150,22 @@
             if(hasil.status === 'success') {
                 semuaSiswa = hasil.data;
                 isiOpsiKelas();
-            } else {
-                alert("Gagal memuat data: " + hasil.message);
             }
         } catch (e) {
-            alert("Koneksi gagal ke server Google: " + e.toString());
+            console.log("Gagal memuat.");
         }
     }
 
-    // 2. Mengisi dropdown kelas secara otomatis tanpa duplikat
     function isiOpsiKelas() {
         let opsiKelas = [...new Set(semuaSiswa.map(s => s.kelas))];
         let select = document.getElementById('pilihKelas');
         select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
         opsiKelas.forEach(k => {
-            select.innerHTML += `<option value="${k}">${k}</option>`;
+            if(k) select.innerHTML += `<option value="${k}">${k}</option>`;
         });
         saringSiswaPerKelas();
     }
 
-    // 3. Mengubah mode (Wali Kelas vs Guru Mapel)
     function gantiMode(mode) {
         modeAktif = mode;
         document.getElementById('infoMode').innerText = `Mode Terpilih: ${mode === 'wali' ? 'Wali Kelas' : 'Guru Mapel'}`;
@@ -114,7 +173,6 @@
         saringSiswaPerKelas();
     }
 
-    // 4. Proses Penyaringan Data Otomatis per Kelas
     function saringSiswaPerKelas() {
         let kelasTerpilih = document.getElementById('pilihKelas').value;
         let header = document.getElementById('headerTabel');
@@ -127,7 +185,6 @@
 
         let siswaTersaring = semuaSiswa.filter(s => s.kelas === kelasTerpilih);
 
-        // Render susunan tabel berdasarkan mode yang dipilih
         if (modeAktif === 'wali') {
             header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Status Presensi</th><th>Laporkan Ortu?</th><th>Aksi</th>`;
             badan.innerHTML = '';
@@ -156,7 +213,6 @@
                     </tr>`;
             });
         } else {
-            // Mode Guru Mapel Matematika
             header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Jenis Aktivitas</th><th>Nilai / Catatan Jurnal</th><th>Aksi</th>`;
             badan.innerHTML = '';
             siswaTersaring.forEach(s => {
@@ -168,11 +224,11 @@
                             <select class="form-select form-select-sm" id="jenis-${s.nis}">
                                 <option value="Tugas Harian">Tugas Harian</option>
                                 <option value="Ujian Harian">Ujian Harian</option>
-                                <option value="Jurnal Keaktifan">Jurnal Keaktifan (Catatan)</option>
+                                <option value="Jurnal Keaktifan">Jurnal Keaktifan</option>
                             </select>
                         </td>
                         <td>
-                            <input type="text" class="form-control form-control-sm" id="nilai-${s.nis}" placeholder="Contoh: 85 atau Pasif di kelas">
+                            <input type="text" class="form-control form-control-sm" id="nilai-${s.nis}" placeholder="Masukkan nilai/catatan">
                         </td>
                         <td>
                             <button class="btn btn-sm btn-success" onclick="simpanNilam('${s.nis}', '${s.nama}', '${s.kelas}')">Input</button>
@@ -182,7 +238,6 @@
         }
     }
 
-    // 5. Fungsi Mengirim Data Absen & Trigger WhatsApp Otomatis
     async function simpanAbsen(nis, nama, kelas, noHp) {
         let status = document.getElementById(`status-${nis}`).value;
         let kirimWa = document.getElementById(`wa-${nis}`).checked;
@@ -192,21 +247,17 @@
             data: { nis: nis, nama: nama, kelas: kelas, status: status, notifWa: kirimWa }
         };
 
-        // Kirim ke Google Sheet
-        alert("Menyimpan ke Google Sheets...");
+        alert("Menyimpan absensi...");
         await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
 
-        // Jika opsi Laporkan via WA dicentang, jalankan sistem WhatsApp otomatis
         if (kirimWa && (status === 'Alpa' || status === 'Sakit' || status === 'Izin')) {
             let pesan = `Yth. Orang tua/Wali dari ${nama}. Menginfokan bahwa pada hari ini siswa bersangkutan tercatat *${status}* pada absensi kelas ${kelas}. Terima kasih.`;
             let urlWa = `https://api.whatsapp.com/send?phone=${noHp}&text=${encodeURIComponent(pesan)}`;
-            window.open(urlWa, '_blank'); // Otomatis membuka aplikasi WA / WA Web
+            window.open(urlWa, '_blank');
         }
-        
         alert(`Data absensi ${nama} sukses tersimpan!`);
     }
 
-    // 6. Fungsi Menyimpan Nilai/Jurnal Mapel Matematika
     async function simpanNilam(nis, nama, kelas) {
         let jenis = document.getElementById(`jenis-${nis}`).value;
         let nilai = document.getElementById(`nilai-${nis}`).value;
@@ -218,16 +269,12 @@
             data: { nis: nis, nama: nama, kelas: kelas, mapel: "Matematika", jenis: jenis, nilai: nilai }
         };
 
-        alert("Menyimpan data perkembangan...");
         await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
-        alert(`Data ${jenis} untuk ${nama} berhasil direkam!`);
+        alert(`Data berhasil disimpan!`);
         document.getElementById(`nilai-${nis}`).value = "";
     }
 
-    // Jalankan otomatis saat web pertama kali dibuka
     window.onload = muatDataSiswa;
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
