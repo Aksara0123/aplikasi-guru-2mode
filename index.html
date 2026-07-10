@@ -1,306 +1,786 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Dashboard Guru Mandiri</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; font-family: sans-serif; }
-        .card-menu { cursor: pointer; transition: 0.2s; }
-        .card-menu:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>aplikasi-guru-2mode</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
 
-<script>
-    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const API_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
-    let semuaSiswa = [];
-</script>
-
-<div class="container py-4">
-    <header class="pb-3 mb-4 border-bottom">
-        <h1 class="fs-4 text-primary fw-bold">🚀 Workspace Administrasi Guru</h1>
-        <span class="text-muted">Fokus pada Murid, Otomatiskan Administrasi</span>
-    </header>
-
-    <div class="card p-3 mb-4 shadow-sm border-start border-warning border-4">
-        <h5 class="fw-bold text-warning">📁 Upload / Perbarui Data Siswa</h5>
-        <p class="text-muted small mb-3">Agar sinkronisasi sukses 100% dan tidak bernilai 0, silakan unduh template di bawah ini, pindahkan data siswa sekolah Anda ke dalam template tersebut, lalu upload kembali ke sini.</p>
-        
-        <div class="mb-3">
-            <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="unduhTemplateCsv()">📥 Unduh Template CSV Pas</button>
-        </div>
-
-        <div class="input-group">
-            <input type="file" class="form-control" id="fileSiswa" accept=".csv">
-            <button class="btn btn-warning fw-bold" type="button" onclick="prosesUploadCsv()">⚡ Proses & Sinkronkan</button>
-        </div>
-        <div id="statusUpload" class="small mt-2 fw-bold text-success"></div>
+  <div id="tampilan-dashboard" class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+      <div class="w-24 h-24 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-white font-bold text-3xl shadow-md mb-4">
+        <span>AG</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">aplikasi-guru-2mode</h1>
+      <p class="text-slate-500 mt-2 text-sm md:text-base">Sistem Informasi Administrasi & Guru Terintegrasi</p>
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card card-menu p-3 bg-white border-start border-primary border-4" onclick="gantiMode('wali')">
-                <h5 class="fw-bold text-primary">📑 Mode Wali Kelas</h5>
-                <p class="text-muted small m-0">Kelola absensi harian kelas perwalian & kirim laporan WhatsApp orang tua.</p>
-            </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <button onclick="pindahHalaman('master')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-500 transition-all text-center group">
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-2.21 8-4V7M4 7c0 2.21 3.58 4 8 4s8-2.21 8-4M4 7c0-2.21 3.58-4 8-4s8 2.21 8 4m0 5c0 2.21-3.58 4-8 4s-8-2.21-8-4"></path></svg>
         </div>
-        <div class="col-md-6">
-            <div class="card card-menu p-3 bg-white border-start border-success border-4" onclick="gantiMode('mapel')">
-                <h5 class="fw-bold text-success">📐 Mode Guru Mapel (Matematika)</h5>
-                <p class="text-muted small m-0">Input nilai, jurnal mengajar, dan rekam perkembangan kompetensi matematika.</p>
-            </div>
-        </div>
-    </div>
+        <span class="font-bold text-lg text-slate-800">Master Data</span>
+        <span class="text-xs text-slate-400 mt-1">Kelola Data Siswa, Guru, & Kelas</span>
+      </button>
 
-    <div class="card p-3 mb-4 shadow-sm">
-        <div class="row align-items-center">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Pilih Kelas Penyaringan:</label>
-                <select class="form-select" id="pilihKelas" onchange="saringSiswaPerKelas()">
-                    <option value="">-- Memuat Kelas... --</option>
+      <button onclick="pindahHalaman('walikelas')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-500 transition-all text-center group">
+        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+        </div>
+        <span class="font-bold text-lg text-slate-800">Walikelas</span>
+        <span class="text-xs text-slate-400 mt-1">Laporan & Catatan Perkembangan Kelas</span>
+      </button>
+
+      <button onclick="pindahHalaman('mapel')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-amber-500 transition-all text-center group">
+        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        </div>
+        <span class="font-bold text-lg text-slate-800">Guru Mapel</span>
+        <span class="text-xs text-slate-400 mt-1">Input Nilai & Presensi Mata Pelajaran</span>
+      </button>
+
+      <button onclick="pindahHalaman('administrasi')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-purple-500 transition-all text-center group">
+        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <span class="font-bold text-lg text-slate-800">Administrasi Guru</span>
+        <span class="text-xs text-slate-400 mt-1">Perangkat Pembelajaran, RPP, & Silabus</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="tampilan-menu" class="hidden max-w-4xl mx-auto px-4 py-12">
+    <button onclick="kembaliKeDashboard()" class="mb-6 flex items-center text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
+      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Kembali ke Dashboard
+    </button>
+    <div id="konten-spesifik" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"></div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIVCcBzE5npBPGYmAm2naJNqBM3166aECxsyIjNwNVNDevobIQ7rf5mLIwYDdcEcCGlg/exec";
+    let memoriSiswaPerKelas = [];
+    let daftarSemuaKelas = []; 
+    let menuAktifSaatIni = "";
+    let statusSemuaWa = true; 
+
+    function pindahHalaman(jenisMenu) {
+      const dashboard = document.getElementById('tampilan-dashboard');
+      const halamanMenu = document.getElementById('tampilan-menu');
+      const kontenSpesifik = document.getElementById('konten-spesifik');
+
+      dashboard.classList.add('hidden');
+      halamanMenu.classList.remove('hidden');
+      menuAktifSaatIni = jenisMenu;
+
+      if (jenisMenu === 'master') {
+        kontenSpesifik.innerHTML = `
+          <div class="border-b border-slate-100 pb-4 mb-6 flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h2 class="text-2xl font-bold text-blue-600">Master Data</h2>
+              <p class="text-slate-500 text-sm mt-1">Kelola basis data utama sekolah.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="pilihSubMaster('siswa')" id="btn-sub-siswa" class="bg-blue-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors">Upload Siswa</button>
+              <button onclick="pilihSubMaster('kelola')" id="btn-sub-kelola" class="bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors">Data Per Kelas</button>
+              <button onclick="pilihSubMaster('guru')" id="btn-sub-guru" class="bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors">Data Guru</button>
+            </div>
+          </div>
+          <div id="area-sub-master"></div>
+        `;
+        pilihSubMaster('siswa');
+        ambilOtomatisDaftarKelas(); 
+      } 
+      else if (jenisMenu === 'walikelas') {
+        kontenSpesifik.innerHTML = `
+          <div class="border-b border-slate-100 pb-4 mb-6 flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h2 class="text-2xl font-bold text-emerald-600">Menu Walikelas</h2>
+              <p class="text-slate-500 text-sm mt-1">Kelola kelas bimbingan Anda, input profil lengkap, dan absensi.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="pilihSubWalikelas('profil')" id="btn-wali-profil" class="bg-emerald-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors">Tambah Siswa Lengkap</button>
+              <button onclick="pilihSubWalikelas('absen')" id="btn-wali-absen" class="bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors">Absensi & Rekap</button>
+            </div>
+          </div>
+          <div id="area-sub-walikelas"></div>
+        `;
+        pilihSubWalikelas('profil');
+        ambilOtomatisDaftarKelas();
+      }
+      else {
+        kontenSpesifik.innerHTML = `<p class="text-slate-600">Fitur belum diaktifkan.</p>`;
+      }
+    }
+
+    function ambilOtomatisDaftarKelas() {
+      kirimKeGoogleAppScript("getDaftarKelas", {}, function(response) {
+        daftarSemuaKelas = response.data;
+        perbaruiElemenDatalist();
+      });
+    }
+
+    function perbaruiElemenDatalist() {
+      const dl = document.getElementById('list-pilihan-kelas');
+      if (!dl) return;
+      let optionsHtml = "";
+      daftarSemuaKelas.forEach(kelas => {
+        optionsHtml += `<option value="${kelas}"></option>`;
+      });
+      dl.innerHTML = optionsHtml;
+    }
+
+    // ================= SUB-MENU WALIKELAS (PROFIL LENGKAP & ABSEN) =================
+
+    function pilihSubWalikelas(sub) {
+      const areaSub = document.getElementById('area-sub-walikelas');
+      document.getElementById('btn-wali-profil').className = "bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors";
+      document.getElementById('btn-wali-absen').className = "bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors";
+
+      if (sub === 'profil') {
+        document.getElementById('btn-wali-profil').className = "bg-emerald-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors";
+        areaSub.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 h-fit">
+              <h3 class="font-bold text-slate-800 mb-4 text-xs tracking-wide uppercase text-slate-400">Profil Lengkap Siswa</h3>
+              <form id="form-siswa-lengkap" onsubmit="tambahSiswaLengkap(event)">
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">Kelas *</label><input type="text" id="wl-kelas" list="list-pilihan-kelas" required class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="7-A"></div>
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">Nama Siswa *</label><input type="text" id="wl-nama" required class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Nama lengkap"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">NIS</label><input type="text" id="wl-nis" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="NIS"></div>
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">NISN</label><input type="text" id="wl-nisn" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="NISN"></div>
+                </div>
+                <div class="mb-3"><label class="block text-xs font-semibold text-slate-600 mb-1">No WA Orang Tua</label><input type="text" id="wl-ortu" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="08xxxxxxxx"></div>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">Nama Ayah</label><input type="text" id="wl-ayah" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Nama Ayah"></div>
+                  <div><label class="block text-xs font-semibold text-slate-600 mb-1">Nama Ibu</label><input type="text" id="wl-ibu" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Nama Ibu"></div>
+                </div>
+                <div class="mb-4"><label class="block text-xs font-semibold text-slate-600 mb-1">Alamat Rumah</label><textarea id="wl-alamat" rows="2" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none resize-none" placeholder="Alamat lengkap tempat tinggal"></textarea></div>
+                <button type="submit" class="w-full bg-emerald-600 text-white text-xs py-2 rounded-lg font-bold hover:bg-emerald-700 shadow-sm">Simpan Profil Lengkap</button>
+              </form>
+            </div>
+            
+            <div class="md:col-span-2 space-y-4">
+              <div class="bg-white p-4 rounded-xl border border-slate-200 flex gap-3 items-end justify-between">
+                <div class="w-44">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Lihat & Unduh Data Kelas</label>
+                  <input type="text" id="wl-cari-kelas" list="list-pilihan-kelas" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Pilih Kelas">
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="muatSiswaLengkapWalikelas()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-blue-700 h-9">Tampilkan</button>
+                  <button onclick="unduhDataSiswaCSV()" class="bg-slate-700 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-800 h-9 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Unduh CSV
+                  </button>
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 italic font-medium">💡 Info: Klik 2x pada kotak teks di tabel untuk mengedit langsung di tempat.</p>
+              <div id="wl-area-tabel" class="overflow-x-auto border border-slate-200 rounded-xl bg-white min-h-[250px]">
+                <div class="p-8 text-xs text-slate-400 text-center">Silakan pilih kelas bimbingan Anda lalu klik Tampilkan.</div>
+              </div>
+            </div>
+          </div>
+          <datalist id="list-pilihan-kelas"></datalist>
+        `;
+        perbaruiElemenDatalist();
+      }
+      else if (sub === 'absen') {
+        document.getElementById('btn-wali-absen').className = "bg-emerald-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors";
+        areaSub.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-wrap gap-3 items-end">
+                <div class="w-32">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Kelas Target</label>
+                  <input type="text" id="abs-kelas" list="list-pilihan-kelas" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Pilih Kelas">
+                </div>
+                <div class="w-32">
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal Absen</label>
+                  <input type="date" id="abs-tanggal" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none">
+                </div>
+                <button onclick="muatSiswaUntukAbsen()" class="bg-emerald-600 text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-emerald-700 h-9">Mulai Absensi</button>
+              </div>
+              
+              <div id="abs-area-tabel" class="overflow-x-auto border border-slate-200 rounded-xl bg-white min-h-[200px]">
+                <div class="p-8 text-xs text-slate-400 text-center">Tentukan kelas dan tanggal untuk memuat daftar absensi harian siswa.</div>
+              </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 h-fit space-y-4">
+              <h3 class="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2 flex items-center gap-1.5 text-blue-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Unduh Rekap Bulanan & Ujian
+              </h3>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Kelas</label>
+                <input type="text" id="rekap-kelas" list="list-pilihan-kelas" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Pilih Kelas">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Rentang Periode</label>
+                <select id="rekap-periode" onchange="toggleInputBulan()" class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white outline-none">
+                  <option value="bulanan">📅 Rekap Bulanan</option>
+                  <option value="pts1">🎯 Bulan Ke-3 (PTS Semester 1)</option>
+                  <option value="pas1">📊 Bulan Ke-6 (PAS Semester 1)</option>
+                  <option value="pts2">🎯 Bulan Ke-9 (PTS Semester 2)</option>
+                  <option value="pat">🏆 Akhir Tahun (Kenaikan Kelas)</option>
                 </select>
+              </div>
+              <div id="area-pilih-bulan">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Pilih Bulan</label>
+                <input type="month" id="rekap-bulan" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none">
+              </div>
+              <button onclick="prosesUnduhRekapAbsen()" class="w-full bg-blue-600 text-white text-xs py-2.5 rounded-lg font-bold hover:bg-blue-700 shadow-sm transition-all flex items-center justify-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Unduh Laporan Rekap (.CSV)
+              </button>
             </div>
-            <div class="col-md-8 text-md-end mt-3 mt-md-0">
-                <span class="badge bg-secondary p-2" id="infoMode">Mode Terpilih: Wali Kelas</span>
-            </div>
-        </div>
-    </div>
+          </div>
+          <datalist id="list-pilihan-kelas"></datalist>
+        `;
+        document.getElementById('abs-tanggal').valueAsDate = new Date();
+        
+        const hariIni = new Date();
+        const bln = String(hariIni.getMonth() + 1).padStart(2, '0');
+        document.getElementById('rekap-bulan').value = `${hariIni.getFullYear()}-${bln}`;
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
-            <span>Daftar Siswa Kelolaan</span>
-            <button class="btn btn-sm btn-outline-light" onclick="muatDataSiswa()">🔄 Refresh Data</button>
-        </div>
-        <div class="table-responsive p-3">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr id="headerTabel"></tr>
-                </thead>
-                <tbody id="badanTabel">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">Silahkan pilih kelas terlebih dahulu untuk menyaring data.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+        perbaruiElemenDatalist();
+      }
+    }
 
-<script>
-    let modeAktif = 'wali';
+    function toggleInputBulan() {
+      const p = document.getElementById('rekap-periode').value;
+      const b = document.getElementById('area-pilih-bulan');
+      if (p === 'bulanan') {
+        b.classList.remove('hidden');
+      } else {
+        b.classList.add('hidden');
+      }
+    }
 
-    // 1. FUNGSI UNTUK GENERATE TEMPLATE CSV OTOMATIS
-    function unduhTemplateCsv() {
-        // Format disesuaikan pas dengan file asli sekolah Anda agar Anda tinggal copypaste mudah
-        const header = "Urut,Rombel,Kelas,NISN,NIS,Nama Lengkap\n001,Kelas 10,X MESIN 2,25261037,0108955289,ACHMAD DJAELANI\n";
-        const blob = new Blob([header], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "template_siswa_sekolah.csv");
-        link.style.visibility = 'hidden';
+    // ================= FUNGSI PROFIL LENGKAP SISWA =================
+
+    function tambahSiswaLengkap(e) {
+      e.preventDefault();
+      const payload = {
+        kelas: document.getElementById('wl-kelas').value,
+        nama: document.getElementById('wl-nama').value,
+        nis: document.getElementById('wl-nis').value,
+        nisn: document.getElementById('wl-nisn').value,
+        noOrtu: document.getElementById('wl-ortu').value,
+        ayah: document.getElementById('wl-ayah').value,
+        ibu: document.getElementById('wl-ibu').value,
+        alamat: document.getElementById('wl-alamat').value
+      };
+
+      kirimKeGoogleAppScript("uploadSiswaLengkap", { data: payload }, function(res) {
+        alert(res.message);
+        document.getElementById('form-siswa-lengkap').reset();
+        ambilOtomatisDaftarKelas();
+      });
+    }
+
+    function muatSiswaLengkapWalikelas() {
+      const kelas = document.getElementById('wl-cari-kelas').value;
+      const area = document.getElementById('wl-area-tabel');
+      if (!kelas) { alert("Pilih kelas terlebih dahulu!"); return; }
+
+      area.innerHTML = "<div class='p-8 text-center text-xs text-emerald-600 animate-pulse font-medium'>Memuat data lengkap...</div>";
+
+      kirimKeGoogleAppScript("getSiswaPerKelas", { kelas: kelas }, function(res) {
+        memoriSiswaPerKelas = res.data;
+        if (memoriSiswaPerKelas.length === 0) {
+          area.innerHTML = "<div class='p-8 text-xs text-red-500 text-center'>Tidak ada siswa di kelas ini.</div>";
+          return;
+        }
+
+        let html = `
+          <table class="w-full text-left text-xs border-collapse table-fixed">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                <th class="p-2 w-10 text-center">No</th>
+                <th class="p-2 w-32">Nama</th>
+                <th class="p-2 w-20">NIS</th>
+                <th class="p-2 w-24">NISN</th>
+                <th class="p-2 w-28">Orang Tua (WA)</th>
+                <th class="p-2 w-24">Ayah</th>
+                <th class="p-2 w-24">Ibu</th>
+                <th class="p-2 w-36">Alamat</th>
+                <th class="p-2 text-center w-16">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">`;
+        memoriSiswaPerKelas.forEach((s, idx) => {
+          html += `
+            <tr class="hover:bg-slate-50/80">
+              <td class="p-2 text-center text-slate-400">${idx+1}</td>
+              <td class="p-2 font-medium text-slate-900 cursor-pointer hover:bg-amber-50 truncate" title="${s.nama}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'nama')">${s.nama}</td>
+              <td class="p-2 font-mono cursor-pointer hover:bg-amber-50 truncate" title="${s.nis || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'nis')">${s.nis || ""}</td>
+              <td class="p-2 font-mono cursor-pointer hover:bg-amber-50 truncate" title="${s.nisn || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'nisn')">${s.nisn || ""}</td>
+              <td class="p-2 font-mono cursor-pointer hover:bg-amber-50 truncate" title="${s.noOrtu || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'noOrtu')">${s.noOrtu || ""}</td>
+              <td class="p-2 cursor-pointer hover:bg-amber-50 truncate" title="${s.ayah || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'ayah')">${s.ayah || ""}</td>
+              <td class="p-2 cursor-pointer hover:bg-amber-50 truncate" title="${s.ibu || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'ibu')">${s.ibu || ""}</td>
+              <td class="p-2 cursor-pointer hover:bg-amber-50 truncate" title="${s.alamat || ''}" ondblclick="ubahMenjadiInputInline(this, ${idx}, 'alamat')">${s.alamat || ""}</td>
+              <td class="p-2 text-center">
+                <button onclick="eksekusiHapusSiswa(${idx})" class="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded text-[10px]">Hapus</button>
+              </td>
+            </tr>`;
+        });
+        html += "</tbody></table>";
+        area.innerHTML = html;
+      });
+    }
+
+    function unduhDataSiswaCSV() {
+      const kelas = document.getElementById('wl-cari-kelas').value;
+      if (memoriSiswaPerKelas.length === 0 || !kelas) { alert("Tampilkan data kelas yang ingin diunduh terlebih dahulu!"); return; }
+      
+      let dataCsv = memoriSiswaPerKelas.map(s => ({
+        "No": "",
+        "Kelas": s.kelas,
+        "NIS": s.nis,
+        "NISN": s.nisn,
+        "Nama Lengkap": s.nama,
+        "No WA Ortu": s.noOrtu,
+        "Nama Ayah": s.ayah,
+        "Nama Ibu": s.ibu,
+        "Alamat": s.alamat
+      }));
+
+      let csv = Papa.unparse(dataCsv);
+      let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      let link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Data_Siswa_Lengkap_Kelas_${kelas.replace(/ /g, '_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ================= FUNGSI ABSENSI HARIAN & TOGGLE WA MASAL =================
+
+    function muatSiswaUntukAbsen() {
+      const kelas = document.getElementById('abs-kelas').value;
+      const tgl = document.getElementById('abs-tanggal').value;
+      const area = document.getElementById('abs-area-tabel');
+      if (!kelas || !tgl) { alert("Tentukan kelas dan tanggal!"); return; }
+
+      area.innerHTML = "<div class='p-8 text-center text-xs text-emerald-600 animate-pulse font-medium'>Memuat data siswa...</div>";
+      statusSemuaWa = true; 
+
+      kirimKeGoogleAppScript("getSiswaPerKelas", { kelas: kelas }, function(res) {
+        let siswa = res.data;
+        if (siswa.length === 0) {
+          area.innerHTML = "<div class='p-8 text-xs text-red-500 text-center'>Tidak ada siswa di kelas ini.</div>";
+          return;
+        }
+
+        let html = `
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                <th class="p-3 w-10 text-center">No</th>
+                <th class="p-3">Nama Siswa</th>
+                <th class="p-3 text-center w-40">Status Kehadiran</th>
+                <th class="p-3 text-center w-44">
+                  <button type="button" onclick="toggleSemuaCentangWa(${siswa.length})" id="btn-toggle-wa-masal" class="bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wide transition-colors">
+                    Hilangkan Semua WA
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">`;
+
+        siswa.forEach((s, idx) => {
+          html += `
+            <tr class="hover:bg-slate-50/80">
+              <td class="p-3 text-center text-slate-400 font-medium">${idx + 1}</td>
+              <td class="p-3 font-medium text-slate-900">${s.nama}</td>
+              <td class="p-3 text-center">
+                <select id="status-abs-${idx}" onchange="cekOtomatisSiswaAbsen(${idx})" class="border border-slate-300 rounded p-1 text-xs bg-white outline-none font-medium">
+                  <option value="Hadir">🟢 Hadir</option>
+                  <option value="Izin">🟡 Izin</option>
+                  <option value="Sakit">🔵 Sakit</option>
+                  <option value="Alfa">🔴 Alfa / Tidak Hadir</option>
+                </select>
+              </td>
+              <td class="p-3 text-center">
+                <label class="inline-flex items-center cursor-pointer select-none">
+                  <input type="checkbox" id="wa-ortu-${idx}" checked class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4 checkbox-wa-siswa">
+                  <span class="ml-1.5 font-medium text-slate-600 text-[11px]">Laporkan via WA</span>
+                </label>
+              </td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>
+          <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end" id="area-tombol-absen">
+            <button onclick="simpanDanKirimAbsen(${JSON.stringify(siswa).replace(/"/g, '&quot;')})" class="bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-lg hover:bg-emerald-700 shadow-sm">
+              Simpan Absensi & Kirim WA
+            </button>
+          </div>`;
+        area.innerHTML = html;
+      });
+    }
+
+    function toggleSemuaCentangWa(jumlahSiswa) {
+      statusSemuaWa = !statusSemuaWa;
+      const tmbWa = document.getElementById('btn-toggle-wa-masal');
+      
+      for (let i = 0; i < jumlahSiswa; i++) {
+        document.getElementById(`wa-ortu-${i}`).checked = statusSemuaWa;
+      }
+      
+      if (statusSemuaWa) {
+        tmbWa.innerText = "Hilangkan Semua WA";
+        tmbWa.className = "bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wide transition-colors";
+      } else {
+        tmbWa.innerText = "Centang Semua WA";
+        tmbWa.className = "bg-blue-600 text-white hover:bg-blue-700 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wide transition-colors";
+      }
+    }
+
+    function cekOtomatisSiswaAbsen(idx) {
+      const status = document.getElementById(`status-abs-${idx}`).value;
+      const cbWa = document.getElementById(`wa-ortu-${idx}`);
+      if (status !== "Hadir") {
+        cbWa.checked = true;
+      } else {
+        cbWa.checked = false;
+      }
+    }
+
+    function simpanDanKirimAbsen(daftarSiswa) {
+      const tgl = document.getElementById('abs-tanggal').value;
+      const kelas = document.getElementById('abs-kelas').value;
+      const areaTombol = document.getElementById('area-tombol-absen');
+      
+      let hitungWaDikirim = 0;
+      let dataKirimKeSheet = [];
+
+      areaTombol.innerHTML = "<span class='text-xs text-emerald-600 font-bold animate-pulse py-2.5'>Sedang menyimpan ke Google Sheets...</span>";
+
+      daftarSiswa.forEach((s, idx) => {
+        const status = document.getElementById(`status-abs-${idx}`).value;
+        const laporkanWa = document.getElementById(`wa-ortu-${idx}`).checked;
+
+        dataKirimKeSheet.push({
+          nama: s.nama,
+          status: status
+        });
+
+        if (laporkanWa && s.noOrtu) {
+          hitungWaDikirim++;
+          let nomorBersih = s.noOrtu.replace(/[^0-9]/g, '');
+          if (nomorBersih.startsWith('0')) nomorBersih = '62' + nomorBersih.slice(1);
+
+          let pesan = `Yth. Orang Tua/Wali dari *${s.nama}* (Kelas ${s.kelas}).%0A%0AMemberitahukan bahwa pada tanggal *${tgl}*, ananda dinyatakan: *${status.toUpperCase()}* dalam kegiatan belajar mengajar.%0A%0ATerima kasih.%0A_Sistem Informasi Sekolah_`;
+          
+          setTimeout(() => {
+            window.open(`https://api.whatsapp.com/send?phone=${nomorBersih}&text=${pesan}`, '_blank');
+          }, idx * 800);
+        }
+      });
+
+      kirimKeGoogleAppScript("simpanAbsensiKeSheet", { tanggal: tgl, kelas: kelas, data: dataKirimKeSheet }, function(res) {
+        alert(`Sukses! Data absensi kelas ${kelas} tanggal ${tgl} berhasil disimpan secara permanen di Google Sheets. ${hitungWaDikirim} antrean WhatsApp disiapkan.`);
+        muatSiswaUntukAbsen(); 
+      });
+    }
+
+    // ================= FUNGSI EXPORT / UNDUH REKAP ABSENSI PERIODE =================
+
+    function prosesUnduhRekapAbsen() {
+      const kelas = document.getElementById('rekap-kelas').value;
+      const periode = document.getElementById('rekap-periode').value;
+      const bulan = document.getElementById('rekap-bulan').value;
+
+      if (!kelas) { alert("Pilih kelas terlebih dahulu untuk rekap laporan!"); return; }
+      if (periode === 'bulanan' && !bulan) { alert("Pilih bulan rekap terlebih dahulu!"); return; }
+
+      alert("Sistem sedang mengalkulasi data rekap di server cloud. Silakan tunggu sebentar...");
+
+      kirimKeGoogleAppScript("getRekapAbsensi", { kelas: kelas, periode: periode, bulan: bulan }, function(res) {
+        const dataRekap = res.data;
+        if (dataRekap.length === 0) {
+          alert(`Tidak ditemukan rekaman data absensi untuk Kelas ${kelas} pada periode yang dipilih.`);
+          return;
+        }
+
+        // 1. Format pemetaan susunan kolom rapi untuk tabel Excel Anda
+        let dataCsv = dataRekap.map((s, idx) => ({
+          "No": idx + 1,
+          "Nama Siswa": s.nama,
+          "Total Hadir": s.hadir,
+          "Sakit": s.sakit,
+          "Izin": s.izin,
+          "Alfa": s.alfa
+        }));
+
+        // 2. Gunakan tanda titik koma (;) sebagai pemisah kolom agar ramah dengan Excel regional Indonesia
+        let csv = Papa.unparse(dataCsv, {
+          delimiter: ";"
+        });
+
+        // 3. Tambahkan BOM (Byte Order Mark) UTF-8 agar sel data terbaca rapi per kolom secara otomatis saat dibuka
+        let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+        
+        let keteranganFile = periode.toUpperCase();
+        if (periode === 'bulanan') keteranganFile = `BULANAN_${bulan}`;
+
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `REKAP_ABSENSI_${kelas.replace(/ /g, '_')}_${keteranganFile}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+      });
     }
 
-    // 2. FUNGSI MEMBACA DAN PROSES FILE CSV YANG SEHAT
-    function prosesUploadCsv() {
-        const fileInput = document.getElementById('fileSiswa');
-        const statusDiv = document.getElementById('statusUpload');
-        
-        if (fileInput.files.length === 0) {
-            alert('Silakan pilih file CSV data siswa terlebih dahulu!');
-            return;
+    // ================= SUB-MENU MASTER DATA =================
+
+    function pilihSubMaster(sub) {
+      const areaSub = document.getElementById('area-sub-master');
+      document.getElementById('btn-sub-siswa').className = "bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors";
+      document.getElementById('btn-sub-kelola').className = "bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors";
+      document.getElementById('btn-sub-guru').className = "bg-slate-100 text-slate-600 font-medium px-3 py-2 rounded-lg text-xs hover:bg-slate-200 transition-colors";
+      
+      if (sub === 'siswa') {
+        document.getElementById('btn-sub-siswa').className = "bg-blue-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors";
+        areaSub.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-4">
+              <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                <h3 class="font-bold text-slate-800 mb-4 text-xs tracking-wide uppercase text-slate-400">Tambah Satuan (Manual)</h3>
+                <form id="form-siswa" onsubmit="tambahSiswaManual(event)">
+                  <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Kelas *</label><input type="text" id="man-kelas" list="list-pilihan-kelas" required class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="7-A"></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">NIS</label><input type="text" id="man-nis" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="1023"></div>
+                  </div>
+                  <div class="mb-3"><label class="block text-xs font-semibold text-slate-600 mb-1">NISN</label><input type="text" id="man-nisn" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="0012345"></div>
+                  <div class="mb-3"><label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap *</label><input type="text" id="man-nama" required class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="Nama murid"></div>
+                  <div class="mb-4"><label class="block text-xs font-semibold text-slate-600 mb-1">No Orang Tua</label><input type="text" id="man-ortu" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none" placeholder="08xxxx"></div>
+                  <button type="submit" class="w-full bg-blue-600 text-white text-xs py-2 rounded-lg font-bold hover:bg-blue-700">Simpan Data</button>
+                </form>
+              </div>
+              <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-200">
+                <h3 class="font-bold text-blue-800 mb-1 text-xs tracking-wide uppercase">Unggah Banyak Kelas (.csv)</h3>
+                <input type="file" id="file-csv-siswa" accept=".csv" class="w-full text-xs text-slate-500 mb-3 cursor-pointer file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-100 file:text-blue-700" />
+                <button onclick="prosesUnggahMasalSiswa()" class="w-full bg-emerald-600 text-white text-xs py-2 rounded-lg font-bold hover:bg-emerald-700">Proses & Unggah</button>
+              </div>
+            </div>
+            <div class="md:col-span-2">
+              <h3 class="font-bold text-slate-800 mb-3 text-sm">Daftar Preview Data / Log</h3>
+              <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white min-h-[200px]" id="log-preview-siswa">
+                <div class="p-8 text-xs text-slate-400 text-center flex h-full items-center justify-center border-dashed border-2 border-slate-100">Belum ada berkas masal yang diproses atau diunggah.</div>
+              </div>
+            </div>
+          </div>
+          <datalist id="list-pilihan-kelas"></datalist>
+        `;
+        perbaruiElemenDatalist();
+      } 
+      else if (sub === 'kelola') {
+        document.getElementById('btn-sub-kelola').className = "bg-blue-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors";
+        areaSub.innerHTML = `
+          <div class="space-y-6">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex gap-3 items-end">
+              <div class="w-44">
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Ketik Kelas Target</label>
+                <input type="text" id="cari-kelas-input" list="list-pilihan-kelas" class="w-full border border-slate-300 rounded-lg p-2 text-xs outline-none focus:border-blue-500" placeholder="Contoh: X AKL">
+              </div>
+              <button onclick="muatDataSiswaPerKelas()" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-blue-700 h-9">Tampilkan Kelas</button>
+            </div>
+            <p class="text-[11px] text-slate-400 italic font-medium -mt-3">💡 Info: Klik 2x pada kotak teks di tabel untuk mengedit langsung di tempat.</p>
+            <div id="area-tabel-kelas" class="overflow-x-auto border border-slate-200 rounded-xl bg-white min-h-[150px]">
+              <div class="p-8 text-xs text-slate-400 text-center">Silakan ketik nama kelas atau pilih dari rekomendasi dropdown, lalu klik Tampilkan Kelas.</div>
+            </div>
+          </div>
+          <datalist id="list-pilihan-kelas"></datalist>
+        `;
+        perbaruiElemenDatalist();
+      } 
+      else if (sub === 'guru') {
+        document.getElementById('btn-sub-guru').className = "bg-blue-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors";
+        areaSub.innerHTML = `<p class="p-4 text-xs text-slate-500">Sub-menu guru tersimulasi.</p>`;
+      }
+    }
+
+    function prosesUnggahMasalSiswa() {
+      const fileInput = document.getElementById('file-csv-siswa');
+      const logArea = document.getElementById('log-preview-siswa');
+      if (!fileInput.files[0]) { alert("Silakan pilih file .csv!"); return; }
+
+      logArea.innerHTML = "<div class='p-8 text-center text-xs text-blue-600 animate-pulse font-medium'>Membaca berkas...</div>";
+
+      Papa.parse(fileInput.files[0], {
+        skipEmptyLines: true,
+        complete: function(results) {
+          let barisData = results.data;
+          if (barisData.length > 0 && isNaN(Number(barisData[0][0]))) { barisData.shift(); }
+          if (barisData.length === 0) { logArea.innerHTML = "<div class='p-8 text-center text-xs text-red-500'>Berkas kosong.</div>"; return; }
+
+          barisData = barisData.map(row => {
+            while (row.length < 6) { row.push(""); }
+            return row.slice(0, 6);
+          });
+
+          kirimKeGoogleAppScript("uploadSiswa", { data: barisData }, function(response) {
+            alert(response.message);
+            fileInput.value = "";
+            logArea.innerHTML = `<div class="p-8 text-xs text-emerald-600 text-center font-medium">${response.message}</div>`;
+            ambilOtomatisDaftarKelas(); 
+          });
+        }
+      });
+    }
+
+    function tambahSiswaManual(e) {
+      e.preventDefault();
+      const kelas = document.getElementById('man-kelas').value.trim();
+      const nama = document.getElementById('man-nama').value.trim();
+      const nis = document.getElementById('man-nis').value.trim();
+      const nisn = document.getElementById('man-nisn').value.trim();
+      const ortu = document.getElementById('man-ortu').value.trim();
+
+      if (!kelas || !nama) { alert("Nama dan Kelas wajib diisi!"); return; }
+
+      kirimKeGoogleAppScript("uploadSiswa", { data: [["", kelas, nis, nisn, nama, ortu]] }, function(response) {
+        alert(response.message);
+        document.getElementById('form-siswa').reset();
+        ambilOtomatisDaftarKelas(); 
+      });
+    }
+
+    function muatDataSiswaPerKelas() {
+      const kelasInput = document.getElementById('cari-kelas-input').value;
+      const areaTabel = document.getElementById('area-tabel-kelas');
+      if (!kelasInput) { alert("Masukkan nama kelas!"); return; }
+
+      areaTabel.innerHTML = "<div class='p-8 text-center text-xs text-blue-600 animate-pulse font-medium'>Mengunduh data kelas dari Google Sheets...</div>";
+
+      kirimKeGoogleAppScript("getSiswaPerKelas", { kelas: kelasInput }, function(response) {
+        memoriSiswaPerKelas = response.data;
+        if (memoriSiswaPerKelas.length === 0) {
+          areaTabel.innerHTML = "<div class='p-8 text-xs text-red-500 text-center'>Tidak ada siswa yang terdaftar di kelas ini.</div>";
+          return;
         }
 
-        const file = fileInput.files[0];
-        const reader = new FileReader();
+        let html = `
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold">
+                <th class="p-2.5 w-12 text-center">No</th>
+                <th class="p-2.5">NIS</th>
+                <th class="p-2.5">NISN</th>
+                <th class="p-2.5">Nama Lengkap</th>
+                <th class="p-2.5">No Orang Tua</th>
+                <th class="p-2.5 text-center w-16">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">`;
 
-        statusDiv.innerText = "Sedang membaca file...";
-        
-        reader.onload = async function(e) {
-            const teks = e.target.result;
-            // Membagi baris dengan aman (bisa menangani windows atau unix lineings)
-            const baris = teks.split(/\r?\n/);
-            
-            statusDiv.innerText = "Sedang mengirim data ke Google Sheets... Mohon tunggu sebentar.";
-            
-            let jumlahSukses = 0;
-            // Loop mulai baris ke-2 (melewati header)
-            for (let i = 1; i < baris.length; i++) {
-                if (!baris[i].trim()) continue;
-                
-                // Menggunakan regex untuk memisahkan koma agar lebih aman dari spasi gaib
-                let kolom = baris[i].split(','); 
-                
-                let kelas = kolom[2] ? kolom[2].trim() : "";
-                let nis = kolom[4] ? kolom[4].trim() : "";
-                let nama = kolom[5] ? kolom[5].trim() : "";
-                
-                if (!nis || !nama) continue;
-
-                let dataKirim = {
-                    action: "tambahSiswa",
-                    data: { nis: nis, nama: nama, kelas: kelas, noHp: "628xxxxxxxx" }
-                };
-
-                try {
-                    await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
-                    jumlahSukses++;
-                } catch(err) {
-                    console.error("Gagal mengirim baris ke-" + i);
-                }
-            }
-
-            if(jumlahSukses > 0) {
-                statusDiv.innerText = `✅ Berhasil sinkronisasi! ${jumlahSukses} data siswa sukses masuk database.`;
-                muatDataSiswa(); 
-            } else {
-                statusDiv.innerHTML = `<span class="text-danger">❌ Gagal membaca data (0 ditambahkan). Pastikan Anda menggunakan file yang diunduh dari tombol "Unduh Template CSV Pas" di atas dan disimpan ulang sebagai .csv</span>`;
-            }
-        };
-
-        reader.readAsText(file);
-    }
-
-    // 3. Ambil data dari Google Sheets
-    async function muatDataSiswa() {
-        document.getElementById('badanTabel').innerHTML = `<tr><td colspan="5" class="text-center">Mengambil data dari Google Sheet...</td></tr>`;
-        try {
-            let respon = await fetch(API_URL);
-            let hasil = await respon.json();
-            if(hasil.status === 'success') {
-                semuaSiswa = hasil.data;
-                isiOpsiKelas();
-            }
-        } catch (e) {
-            console.log("Gagal memuat.");
-        }
-    }
-
-    function isiOpsiKelas() {
-        let opsiKelas = [...new Set(semuaSiswa.map(s => s.kelas))];
-        let select = document.getElementById('pilihKelas');
-        select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-        opsiKelas.forEach(k => {
-            if(k) select.innerHTML += `<option value="${k}">${k}</option>`;
+        memoriSiswaPerKelas.forEach((mhs, index) => {
+          html += `
+            <tr class="hover:bg-slate-50/80">
+              <td class="p-2.5 text-center text-slate-400 font-medium">${index + 1}</td>
+              <td class="p-2.5 font-mono cursor-pointer hover:bg-amber-50" ondblclick="ubahMenjadiInputInline(this, ${index}, 'nis')">${mhs.nis}</td>
+              <td class="p-2.5 font-mono cursor-pointer hover:bg-amber-50" ondblclick="ubahMenjadiInputInline(this, ${index}, 'nisn')">${mhs.nisn}</td>
+              <td class="p-2.5 font-medium text-slate-900 cursor-pointer hover:bg-amber-50" ondblclick="ubahMenjadiInputInline(this, ${index}, 'nama')">${mhs.nama}</td>
+              <td class="p-2.5 text-slate-600 cursor-pointer hover:bg-amber-50" ondblclick="ubahMenjadiInputInline(this, ${index}, 'noOrtu')">${mhs.noOrtu}</td>
+              <td class="p-2.5 text-center flex justify-center">
+                <button onclick="eksekusiHapusSiswa(${index})" class="bg-red-500 hover:bg-red-600 text-white font-bold px-2 py-1 rounded text-[10px]">Hapus</button>
+              </td>
+            </tr>`;
         });
-        saringSiswaPerKelas();
+
+        html += "</tbody></table>";
+        areaTabel.innerHTML = html;
+      });
     }
 
-    function gantiMode(mode) {
-        modeAktif = mode;
-        document.getElementById('infoMode').innerText = `Mode Terpilih: ${mode === 'wali' ? 'Wali Kelas' : 'Guru Mapel'}`;
-        document.getElementById('infoMode').className = `badge p-2 ${mode === 'wali' ? 'bg-primary' : 'bg-success'}`;
-        saringSisahPerKelas();
+    function ubahMenjadiInputInline(elemenTd, indexSiswa, kolom) {
+      if (elemenTd.querySelector('input')) return;
+      const nilaiLama = elemenTd.innerText.trim();
+      
+      elemenTd.innerHTML = `
+        <input type="text" 
+          class="w-full min-w-[130px] border-2 border-blue-500 bg-amber-50 px-2 py-1.5 text-xs rounded shadow-sm outline-none font-semibold text-slate-900" 
+          value="${nilaiLama}">
+      `;
+      
+      const input = elemenTd.querySelector('input');
+      input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+
+      input.onblur = function() {
+        konfirmasiDanSimpanInline(elemenTd, input, indexSiswa, kolom, nilaiLama);
+      };
+
+      input.onkeydown = function(e) {
+        if (e.key === "Enter") { input.blur(); }
+        if (e.key === "Escape") { elemenTd.innerHTML = nilaiLama; }
+      };
     }
 
-    function saringSiswaPerKelas() {
-        let kelasTerpilih = document.getElementById('pilihKelas').value;
-        let header = document.getElementById('headerTabel');
-        let badan = document.getElementById('badanTabel');
+    function konfirmasiDanSimpanInline(elemenTd, elemenInput, indexSiswa, kolom, nilaiLama) {
+      const nilaiBaru = elemenInput.value.trim();
+      if (nilaiBaru === nilaiLama) { elemenTd.innerHTML = nilaiLama; return; }
 
-        if (!kelasTerpilih) {
-            badan.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Silahkan pilih kelas terlebih dahulu untuk menyaring data.</td></tr>`;
-            return;
-        }
+      const s = memoriSiswaPerKelas[indexSiswa];
+      const dataUpdate = {
+        rowNum: s.rowNum,
+        kelas: s.kelas,
+        nis: kolom === 'nis' ? nilaiBaru : s.nis,
+        nisn: kolom === 'nisn' ? nilaiBaru : s.nisn,
+        nama: kolom === 'nama' ? nilaiBaru : s.nama,
+        noOrtu: kolom === 'noOrtu' ? nilaiBaru : s.noOrtu,
+        ayah: kolom === 'ayah' ? nilaiBaru : s.ayah,
+        ibu: kolom === 'ibu' ? nilaiBaru : s.ibu,
+        alamat: kolom === 'alamat' ? nilaiBaru : s.alamat
+      };
 
-        let siswaTersaring = semuaSiswa.filter(s => s.kelas === kelasTerpilih);
-
-        if (modeAktif === 'wali') {
-            header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Status Presensi</th><th>Laporkan Ortu?</th><th>Aksi</th>`;
-            badan.innerHTML = '';
-            siswaTersaring.forEach(s => {
-                badan.innerHTML += `
-                    <tr>
-                        <td>${s.nis}</td>
-                        <td class="fw-bold">${s.nama}</td>
-                        <td>
-                            <select class="form-select form-select-sm" id="status-${s.nis}">
-                                <option value="Hadir">Hadir</option>
-                                <option value="Sakit">Sakit</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Alpa">Alpa</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="wa-${s.nis}">
-                                <label class="form-check-label small">Kirim Notif WA</label>
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="simpanAbsen('${s.nis}', '${s.nama}', '${s.kelas}', '${s.noHp}')">Simpan</button>
-                        </td>
-                    </tr>`;
-            });
-        } else {
-            header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Jenis Aktivitas</th><th>Nilai / Catatan Jurnal</th><th>Aksi</th>`;
-            badan.innerHTML = '';
-            siswaTersaring.forEach(s => {
-                badan.innerHTML += `
-                    <tr>
-                        <td>${s.nis}</td>
-                        <td class="fw-bold">${s.nama}</td>
-                        <td>
-                            <select class="form-select form-select-sm" id="jenis-${s.nis}">
-                                <option value="Tugas Harian">Tugas Harian</option>
-                                <option value="Ujian Harian">Ujian Harian</option>
-                                <option value="Jurnal Keaktifan">Jurnal Keaktifan</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control form-control-sm" id="nilai-${s.nis}" placeholder="Masukkan nilai/catatan">
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-success" onclick="simpanNilam('${s.nis}', '${s.nama}', '${s.kelas}')">Input</button>
-                        </td>
-                    </tr>`;
-            });
-        }
+      elemenTd.innerHTML = `<span class="text-blue-500 animate-pulse font-medium">Menyimpan...</span>`;
+      kirimKeGoogleAppScript("updateSiswa", dataUpdate, function(res) {
+        if (menuAktifSaatIni === 'master') { muatDataSiswaPerKelas(); } 
+        else if (menuAktifSaatIni === 'walikelas') { muatSiswaLengkapWalikelas(); }
+      });
     }
 
-    async function simpanAbsen(nis, nama, kelas, noHp) {
-        let status = document.getElementById(`status-${nis}`).value;
-        let kirimWa = document.getElementById(`wa-${nis}`).checked;
+    function eksekusiHapusSiswa(index) {
+      const s = memoriSiswaPerKelas[index];
+      if (!confirm(`Apakah Anda yakin ingin menghapus "${s.nama}"?`)) return;
 
-        let dataKirim = {
-            action: "simpanAbsenHarian",
-            data: { nis: nis, nama: nama, kelas: kelas, status: status, notifWa: kirimWa }
-        };
-
-        alert("Menyimpan absensi...");
-        await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
-
-        if (kirimWa && (status === 'Alpa' || status === 'Sakit' || status === 'Izin')) {
-            let pesan = `Yth. Orang tua/Wali dari ${nama}. Menginfokan bahwa pada hari ini siswa bersangkutan tercatat *${status}* pada absensi kelas ${kelas}. Terima kasih.`;
-            let urlWa = `https://api.whatsapp.com/send?phone=${noHp}&text=${encodeURIComponent(pesan)}`;
-            window.open(urlWa, '_blank');
-        }
-        alert(`Data absensi ${nama} sukses tersimpan!`);
+      kirimKeGoogleAppScript("hapusSiswa", { rowNum: s.rowNum }, function(res) {
+        alert(res.message);
+        if (menuAktifSaatIni === 'master') { muatDataSiswaPerKelas(); } 
+        else if (menuAktifSaatIni === 'walikelas') { muatSiswaLengkapWalikelas(); }
+      });
     }
 
-    async function simpanNilam(nis, nama, kelas) {
-        let jenis = document.getElementById(`jenis-${nis}`).value;
-        let nilai = document.getElementById(`nilai-${nis}`).value;
-
-        if(!nilai) return alert("Isi nilai atau catatan terlebih dahulu!");
-
-        let dataKirim = {
-            action: "simpanProgressMapel",
-            data: { nis: nis, nama: nama, kelas: kelas, mapel: "Matematika", jenis: jenis, nilai: nilai }
-        };
-
-        await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
-        alert(`Data berhasil disimpan!`);
-        document.getElementById(`nilai-${nis}`).value = "";
+    function kirimKeGoogleAppScript(action, payload, callback) {
+      payload.action = action;
+      fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status === "success") { callback(res); } 
+        else { alert("❌ Gagal: " + res.message); }
+      })
+      .catch(err => { alert("Gagal terhubung ke Apps Script: " + err.message); });
     }
 
-    window.onload = muatDataSiswa;
-</script>
+    function kembaliKeDashboard() {
+      document.getElementById('tampilan-dashboard').classList.remove('hidden');
+      document.getElementById('tampilan-menu').classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
