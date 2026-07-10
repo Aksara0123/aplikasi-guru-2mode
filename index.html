@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Dashboard Guru & Wali Kelas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+    <nav class="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-50 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">🎓</span>
+            <h1 class="text-xl font-bold tracking-wider">EduManage - 2 Mode</h1>
+        </div>
+        <div class="flex bg-indigo-900 p-1 rounded-lg shadow-inner">
+            <button id="btnWali" onclick="switchMode('walikelas')" class="px-4 py-2 rounded-md font-semibold bg-indigo-600 text-white shadow-md cursor-pointer transition-all duration-300">
+                💼 Mode Wali Kelas
+            </button>
+            <button id="btnGuru" onclick="switchMode('guru')" class="px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300">
+                📖 Mode Guru Mapel
+            </button>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-4 mt-6">
+        
+        <div id="sectionWaliKelas" class="space-y-6">
+            <div class="border-l-4 border-indigo-600 pl-2">
+                <h2 class="text-2xl font-bold text-slate-800">Menu Utama Wali Kelas</h2>
+                <p class="text-sm text-slate-500">Kelola data murid harian kelas Anda.</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold mb-4 text-indigo-600 flex items-center gap-2">➕ Pendaftaran Siswa Baru</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NOMOR INDUK (NIS)</label>
+                        <input type="text" id="waliNis" placeholder="Contoh: 2026001" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA LENGKAP SISWA</label>
+                        <input type="text" id="waliNama" placeholder="Contoh: Budi Santoso" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS BINAAN</label>
+                        <input type="text" id="waliKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+                <button onclick="tambahSiswa()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Simpan Data Siswa</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold mb-4 text-indigo-600 flex items-center gap-2">📆 Pencatatan Absensi Harian</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS SISWA</label>
+                        <input type="text" id="absKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NIS SISWA</label>
+                        <input type="text" id="absNis" placeholder="Masukkan NIS" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA SISWA</label>
+                        <input type="text" id="absNama" placeholder="Nama Siswa" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">STATUS KEHADIRAN</label>
+                        <select id="absStatus" class="border border-slate-300 p-2.5 rounded-lg w-full bg-white">
+                            <option value="Hadir">🟢 Hadir</option>
+                            <option value="Sakit">🟡 Sakit</option>
+                            <option value="Izin">🔵 Izin</option>
+                            <option value="Alfa">🔴 Alfa</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="simpanAbsenHarian()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Kirim Absen Harian</button>
+            </div>
+        </div>
+
+        <div id="sectionGuru" class="space-y-6 hidden">
+            <div class="border-l-4 border-emerald-600 pl-2">
+                <h2 class="text-2xl font-bold text-slate-800">Menu Utama Guru Mapel</h2>
+                <p class="text-sm text-slate-500">Input nilai tugas/ujian serta cek perkembangan siswa di kelas ajar Anda.</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold mb-4 text-emerald-600 flex items-center gap-2">📝 Input Perkembangan Nilai & Absen Mapel</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS YANG DIAJAR</label>
+                        <input type="text" id="guruKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">MATA PELAJARAN</label>
+                        <input type="text" id="guruMapel" placeholder="Contoh: Matematika / Produktif" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">KATEGORI PENILAIAN</label>
+                        <select id="guruJenis" class="border border-slate-300 p-2.5 rounded-lg w-full bg-white">
+                            <option value="Kehadiran Mapel">Kehadiran Jam Pelajaran</option>
+                            <option value="Tugas 1">Tugas 1</option>
+                            <option value="Tugas 2">Tugas 2</option>
+                            <option value="UTS">UTS (Ujian Tengah Semester)</option>
+                            <option value="UAS">UAS (Ujian Akhir Semester)</option>
+                        </select>
+                    </div>
+                </div>
+                <hr class="my-4 border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NIS MURID</label>
+                        <input type="text" id="guruNis" placeholder="NIS Murid" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA MURID</label>
+                        <input type="text" id="guruNama" placeholder="Nama Murid" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">NILAI / SKOR ANGKA</label>
+                        <input type="number" id="guruNilai" placeholder="Rentang 0 - 100" class="border border-slate-300 p-2.5 rounded-lg w-full">
+                    </div>
+                </div>
+                <button onclick="simpanNilai()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Simpan Progress Nilai</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold mb-1 text-purple-600 flex items-center gap-2">📈 Peninjauan Pertumbuhan Murid (Coming Soon)</h3>
+                <p class="text-xs text-slate-400 mb-4">Fitur ini ke depan dirancang mudah di-update untuk menampilkan grafik perkembangan berdasarkan data di Google Sheets secara otomatis.</p>
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <input type="text" id="cariNis" placeholder="Masukkan NIS Murid untuk ditinjau..." class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none">
+                    <button onclick="alert('Fitur grafik ini sangat mudah ditambahkan nantinya karena letak kode dan datanya sudah teratur!')" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg cursor-pointer whitespace-nowrap shadow transition">Tampilkan Analisis Murid</button>
+                </div>
+                <div class="border-2 border-dashed border-slate-300 h-36 flex items-center justify-center text-slate-400 font-medium rounded-xl bg-slate-50">
+                    [ Area Visualisasi Grafik Perkembangan Nilai Murid ]
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // ⚠️ ALAMAT JEMBATAN DATABASE KAMU
+        // ==========================================
+        // GANTI TULISAN DI BAWAH DENGAN URL WEB APP YANG KAMU COPY DARI SCREENSHOT TADI!
+        const BASE_URL = "https://script.google.com/macros/s/AKfycbwAbURcu_MjxHATs-y_jPG4BWmqWM1op0VQOaUDIpYHW79P7VqwVmkSjTkpIztr32IX/exec";
+
+        // Fungsi Ganti Tampilan Mode Dashboard
+        function switchMode(mode) {
+            const secWali = document.getElementById("sectionWaliKelas");
+            const secGuru = document.getElementById("sectionGuru");
+            const btnWali = document.getElementById("btnWali");
+            const btnGuru = document.getElementById("btnGuru");
+
+            if (mode === 'walikelas') {
+                secWali.classList.remove("hidden");
+                secGuru.classList.add("hidden");
+                btnWali.className = "px-4 py-2 rounded-md font-semibold bg-indigo-600 text-white shadow-md cursor-pointer transition-all duration-300";
+                btnGuru.className = "px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300";
+            } else {
+                secWali.classList.add("hidden");
+                secGuru.classList.remove("hidden");
+                btnWali.className = "px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300";
+                btnGuru.className = "px-4 py-2 rounded-md font-semibold bg-emerald-600 text-white shadow-md cursor-pointer transition-all duration-300";
+            }
+        }
+
+        // Fungsi Pengiriman Data ke Backend Google Apps Script via API JSON
+        async function kirimKeDatabase(actionName, dataPayload) {
+            if (BASE_URL === "URL_WEB_APP_KAMU_DI_SINI") {
+                alert("PENTING: Ubah dulu variabel BASE_URL di dalam file HTML ini menggunakan URL Web App Google Anda!");
+                return;
+            }
+
+            try {
+                // Memunculkan tanda proses sedang berjalan
+                const button = event.target;
+                const txtAwal = button.innerText;
+                button.innerText = "⏳ Sedang Menyimpan...";
+                button.disabled = true;
+
+                const respon = await fetch(BASE_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: actionName,
+                        data: dataPayload
+                    })
+                });
+                
+                const hasil = await respon.json();
+                alert("Hasil: " + hasil.message);
+                
+                // Mengembalikan tombol dan mengosongkan input jika sukses
+                button.innerText = txtAwal;
+                button.disabled = false;
+
+            } catch (error) {
+                console.error(error);
+                alert("Gagal terhubung dengan Database Google Sheets. Pastikan akses Web App diset ke 'Anyone'.");
+            }
+        }
+
+        // FUNGSI 1: WALI KELAS - DAFTAR SISWA BARU
+        function tambahSiswa() {
+            const payload = {
+                nis: document.getElementById("waliNis").value,
+                nama: document.getElementById("waliNama").value,
+                kelas: document.getElementById("waliKelas").value
+            };
+            
+            if(!payload.nis || !payload.nama || !payload.kelas) return alert("Mohon lengkapi semua kolom pendaftaran!");
+            kirimKeDatabase("tambahSiswa", payload);
+        }
+
+        // FUNGSI 2: WALI KELAS - INPUT ABSENSI HARIAN
+        function simpanAbsenHarian() {
+            const payload = {
+                kelas: document.getElementById("absKelas").value,
+                nis: document.getElementById("absNis").value,
+                nama: document.getElementById("absNama").value,
+                status: document.getElementById("absStatus").value
+            };
+            
+            if(!payload.kelas || !payload.nis || !payload.nama) return alert("Mohon lengkapi data absensi siswa!");
+            kirimKeDatabase("simpanAbsenHarian", payload);
+        }
+
+        // FUNGSI 3: GURU MAPEL - INPUT NILAI & ABSEN PROGRESS
+        function simpanNilai() {
+            const payload = {
+                kelas: document.getElementById("guruKelas").value,
+                mapel: document.getElementById("guruMapel").value,
+                jenis: document.getElementById("guruJenis").value,
+                nis: document.getElementById("guruNis").value,
+                nama: document.getElementById("guruNama").value,
+                nilai: document.getElementById("guruNilai").value
+            };
+            
+            if(!payload.kelas || !payload.mapel || !payload.nis || !payload.nama || !payload.nilai) return alert("Mohon isi semua kolom nilai perkembangan!");
+            kirimKeDatabase("simpanProgressMapel", payload);
+        }
+    </script>
+</body>
+</html>
