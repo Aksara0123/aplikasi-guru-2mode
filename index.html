@@ -68,7 +68,15 @@
     let menuAktifSaatIni = "";
     let statusSemuaWa = true; 
 
+    // Fungsi pemicu saat tombol menu di-klik oleh pengguna
     function pindahHalaman(jenisMenu) {
+      // Mengubah URL hash di browser secara otomatis (misal: #master atau #walikelas)
+      window.location.hash = jenisMenu;
+      eksekusiRenderMenu(jenisMenu);
+    }
+
+    // Fungsi inti untuk menampilkan isi konten menu
+    function eksekusiRenderMenu(jenisMenu) {
       const dashboard = document.getElementById('tampilan-dashboard');
       const halamanMenu = document.getElementById('tampilan-menu');
       const kontenSpesifik = document.getElementById('konten-spesifik');
@@ -115,6 +123,13 @@
       else {
         kontenSpesifik.innerHTML = `<p class="text-slate-600">Fitur belum diaktifkan.</p>`;
       }
+    }
+
+    function kembaliKeDashboard() {
+      window.location.hash = ""; // Membersihkan tanda hash di alamat browser
+      document.getElementById('tampilan-dashboard').classList.remove('hidden');
+      document.getElementById('tampilan-menu').classList.add('hidden');
+      menuAktifSaatIni = "";
     }
 
     function ambilOtomatisDaftarKelas() {
@@ -511,7 +526,6 @@
           return;
         }
 
-        // 1. Format pemetaan susunan kolom rapi untuk tabel Excel Anda
         let dataCsv = dataRekap.map((s, idx) => ({
           "No": idx + 1,
           "Nama Siswa": s.nama,
@@ -521,12 +535,10 @@
           "Alfa": s.alfa
         }));
 
-        // 2. Gunakan tanda titik koma (;) sebagai pemisah kolom agar ramah dengan Excel regional Indonesia
         let csv = Papa.unparse(dataCsv, {
           delimiter: ";"
         });
 
-        // 3. Tambahkan BOM (Byte Order Mark) UTF-8 agar sel data terbaca rapi per kolom secara otomatis saat dibuka
         let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
         
         let keteranganFile = periode.toUpperCase();
@@ -777,10 +789,29 @@
       .catch(err => { alert("Gagal terhubung ke Apps Script: " + err.message); });
     }
 
-    function kembaliKeDashboard() {
-      document.getElementById('tampilan-dashboard').classList.remove('hidden');
-      document.getElementById('tampilan-menu').classList.add('hidden');
-    }
+    // ================= DETEKSI NAVIGASI OTOMATIS BROWSER (HASH LISTENERS) =================
+
+    // Listener 1: Memeriksa perubahan hash ketika tombol Back/Forward browser ditekan
+    window.addEventListener("hashchange", function() {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) {
+        // Jika hash kosong kembali ke dashboard utama
+        document.getElementById('tampilan-dashboard').classList.remove('hidden');
+        document.getElementById('tampilan-menu').classList.add('hidden');
+        menuAktifSaatIni = "";
+      } else if (hash !== menuAktifSaatIni) {
+        // Jika mendeteksi hash baru, jalankan render kontennya
+        eksekusiRenderMenu(hash);
+      }
+    });
+
+    // Listener 2: Memeriksa hash saat halaman pertama kali dibuka / di-refresh oleh user (F5)
+    window.addEventListener("DOMContentLoaded", function() {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        eksekusiRenderMenu(hash);
+      }
+    });
   </script>
 </body>
 </html>
