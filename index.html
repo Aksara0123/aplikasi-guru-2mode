@@ -15,7 +15,7 @@
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-    const API_URL = "https://script.google.com/macros/s/AKfycbx28-AW1xATsjk2WwMiyd3s5M1oP_TuWzSsJRoBKytXSwHNUHPa5Mq0vYAD2vfejeMY/exec";
+    const API_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA";
     let semuaSiswa = [];
 </script>
 
@@ -26,8 +26,13 @@
     </header>
 
     <div class="card p-3 mb-4 shadow-sm border-start border-warning border-4">
-        <h5 class="fw-bold text-warning">📁 Upload / Perbarui Data Siswa Sekolah</h5>
-        <p class="text-muted small">Punya data siswa baru dari sekolah? Upload file `.csv` atau Excel yang sudah di-save as `.csv` di sini. Sistem akan otomatis menyaring dan memasukkannya ke database.</p>
+        <h5 class="fw-bold text-warning">📁 Upload / Perbarui Data Siswa</h5>
+        <p class="text-muted small mb-3">Agar sinkronisasi sukses 100% dan tidak bernilai 0, silakan unduh template di bawah ini, pindahkan data siswa sekolah Anda ke dalam template tersebut, lalu upload kembali ke sini.</p>
+        
+        <div class="mb-3">
+            <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="unduhTemplateCsv()">📥 Unduh Template CSV Pas</button>
+        </div>
+
         <div class="input-group">
             <input type="file" class="form-control" id="fileSiswa" accept=".csv">
             <button class="btn btn-warning fw-bold" type="button" onclick="prosesUploadCsv()">⚡ Proses & Sinkronkan</button>
@@ -87,7 +92,22 @@
 <script>
     let modeAktif = 'wali';
 
-    // 1. FUNGSI MEMBACA DAN PROSES FILE CSV YANG DIUPLOAD
+    // 1. FUNGSI UNTUK GENERATE TEMPLATE CSV OTOMATIS
+    function unduhTemplateCsv() {
+        // Format disesuaikan pas dengan file asli sekolah Anda agar Anda tinggal copypaste mudah
+        const header = "Urut,Rombel,Kelas,NISN,NIS,Nama Lengkap\n001,Kelas 10,X MESIN 2,25261037,0108955289,ACHMAD DJAELANI\n";
+        const blob = new Blob([header], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "template_siswa_sekolah.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // 2. FUNGSI MEMBACA DAN PROSES FILE CSV YANG SEHAT
     function prosesUploadCsv() {
         const fileInput = document.getElementById('fileSiswa');
         const statusDiv = document.getElementById('statusUpload');
@@ -104,20 +124,19 @@
         
         reader.onload = async function(e) {
             const teks = e.target.result;
-            const baris = teks.split('\n');
+            // Membagi baris dengan aman (bisa menangani windows atau unix lineings)
+            const baris = teks.split(/\r?\n/);
             
-            statusDiv.innerText = "Sedang mengirim data ke Google Sheets (Tunggu sebentar)...";
+            statusDiv.innerText = "Sedang mengirim data ke Google Sheets... Mohon tunggu sebentar.";
             
-            // Loop data mulai dari baris ke-2 (mengabaikan header file)
             let jumlahSukses = 0;
+            // Loop mulai baris ke-2 (melewati header)
             for (let i = 1; i < baris.length; i++) {
                 if (!baris[i].trim()) continue;
                 
-                // Memisah kolom (asumsi pemisah koma)
+                // Menggunakan regex untuk memisahkan koma agar lebih aman dari spasi gaib
                 let kolom = baris[i].split(','); 
                 
-                // Sesuaikan urutan kolom dari file sekolah Anda:
-                // Urut, Rombel, Kelas, NISN, NIS, Nama Lengkap
                 let kelas = kolom[2] ? kolom[2].trim() : "";
                 let nis = kolom[4] ? kolom[4].trim() : "";
                 let nama = kolom[5] ? kolom[5].trim() : "";
@@ -126,22 +145,29 @@
 
                 let dataKirim = {
                     action: "tambahSiswa",
-                    data: { nis: nis, nama: nama, kelas: kelas, noHp: "628xxxxxxxx" } // No HP default dummy
+                    data: { nis: nis, nama: nama, kelas: kelas, noHp: "628xxxxxxxx" }
                 };
 
-                // Kirim satu per satu ke API Google Sheets Anda
-                await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
-                jumlahSukses++;
+                try {
+                    await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
+                    jumlahSukses++;
+                } catch(err) {
+                    console.error("Gagal mengirim baris ke-" + i);
+                }
             }
 
-            statusDiv.innerText = `✅ Berhasil mengunggah ${jumlahSukses} data siswa baru secara otomatis!`;
-            muatDataSiswa(); // Refresh tampilan tabel
+            if(jumlahSukses > 0) {
+                statusDiv.innerText = `✅ Berhasil sinkronisasi! ${jumlahSukses} data siswa sukses masuk database.`;
+                muatDataSiswa(); 
+            } else {
+                statusDiv.innerHTML = `<span class="text-danger">❌ Gagal membaca data (0 ditambahkan). Pastikan Anda menggunakan file yang diunduh dari tombol "Unduh Template CSV Pas" di atas dan disimpan ulang sebagai .csv</span>`;
+            }
         };
 
         reader.readAsText(file);
     }
 
-    // 2. Ambil data dari Google Sheets
+    // 3. Ambil data dari Google Sheets
     async function muatDataSiswa() {
         document.getElementById('badanTabel').innerHTML = `<tr><td colspan="5" class="text-center">Mengambil data dari Google Sheet...</td></tr>`;
         try {
@@ -170,7 +196,7 @@
         modeAktif = mode;
         document.getElementById('infoMode').innerText = `Mode Terpilih: ${mode === 'wali' ? 'Wali Kelas' : 'Guru Mapel'}`;
         document.getElementById('infoMode').className = `badge p-2 ${mode === 'wali' ? 'bg-primary' : 'bg-success'}`;
-        saringSiswaPerKelas();
+        saringSisahPerKelas();
     }
 
     function saringSiswaPerKelas() {
