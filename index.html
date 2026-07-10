@@ -3,244 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Dashboard Guru & Wali Kelas</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Web Dashboard Guru Mandiri</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: sans-serif; }
+        .card-menu { cursor: pointer; transition: 0.2s; }
+        .card-menu:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800">
+<body>
 
-    <nav class="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-50 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-2">
-            <span class="text-2xl">🎓</span>
-            <h1 class="text-xl font-bold tracking-wider">EduManage - 2 Mode</h1>
-        </div>
-        <div class="flex bg-indigo-900 p-1 rounded-lg shadow-inner">
-            <button id="btnWali" onclick="switchMode('walikelas')" class="px-4 py-2 rounded-md font-semibold bg-indigo-600 text-white shadow-md cursor-pointer transition-all duration-300">
-                💼 Mode Wali Kelas
-            </button>
-            <button id="btnGuru" onclick="switchMode('guru')" class="px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300">
-                📖 Mode Guru Mapel
-            </button>
-        </div>
-    </nav>
+<script>
+    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+    const API_URL = "https://script.google.com/macros/s/AKfycbx28-AW1xATsjk2WwMiyd3s5M1oP_TuWzSsJRoBKytXSwHNUHPa5Mq0vYAD2vfejeMY/exec";
+    let semuaSiswa = [];
+</script>
 
-    <div class="max-w-4xl mx-auto p-4 mt-6">
-        
-        <div id="sectionWaliKelas" class="space-y-6">
-            <div class="border-l-4 border-indigo-600 pl-2">
-                <h2 class="text-2xl font-bold text-slate-800">Menu Utama Wali Kelas</h2>
-                <p class="text-sm text-slate-500">Kelola data murid harian kelas Anda.</p>
-            </div>
-            
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold mb-4 text-indigo-600 flex items-center gap-2">➕ Pendaftaran Siswa Baru</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NOMOR INDUK (NIS)</label>
-                        <input type="text" id="waliNis" placeholder="Contoh: 2026001" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA LENGKAP SISWA</label>
-                        <input type="text" id="waliNama" placeholder="Contoh: Budi Santoso" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS BINAAN</label>
-                        <input type="text" id="waliKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-                <button onclick="tambahSiswa()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Simpan Data Siswa</button>
-            </div>
+<div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom">
+        <h1 class="fs-4 text-primary fw-bold">🚀 Workspace Administrasi Guru</h1>
+        <span class="text-muted">Fokus pada Murid, Otomatiskan Administrasi</span>
+    </header>
 
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold mb-4 text-indigo-600 flex items-center gap-2">📆 Pencatatan Absensi Harian</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS SISWA</label>
-                        <input type="text" id="absKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NIS SISWA</label>
-                        <input type="text" id="absNis" placeholder="Masukkan NIS" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA SISWA</label>
-                        <input type="text" id="absNama" placeholder="Nama Siswa" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">STATUS KEHADIRAN</label>
-                        <select id="absStatus" class="border border-slate-300 p-2.5 rounded-lg w-full bg-white">
-                            <option value="Hadir">🟢 Hadir</option>
-                            <option value="Sakit">🟡 Sakit</option>
-                            <option value="Izin">🔵 Izin</option>
-                            <option value="Alfa">🔴 Alfa</option>
-                        </select>
-                    </div>
-                </div>
-                <button onclick="simpanAbsenHarian()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Kirim Absen Harian</button>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card card-menu p-3 bg-white border-start border-primary border-4" onclick="gantiMode('wali')">
+                <h5 class="fw-bold text-primary">📑 Mode Wali Kelas</h5>
+                <p class="text-muted small m-0">Kelola absensi harian kelas perwalian & kirim laporan WhatsApp orang tua.</p>
             </div>
         </div>
-
-        <div id="sectionGuru" class="space-y-6 hidden">
-            <div class="border-l-4 border-emerald-600 pl-2">
-                <h2 class="text-2xl font-bold text-slate-800">Menu Utama Guru Mapel</h2>
-                <p class="text-sm text-slate-500">Input nilai tugas/ujian serta cek perkembangan siswa di kelas ajar Anda.</p>
-            </div>
-            
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold mb-4 text-emerald-600 flex items-center gap-2">📝 Input Perkembangan Nilai & Absen Mapel</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">KELAS YANG DIAJAR</label>
-                        <input type="text" id="guruKelas" placeholder="Contoh: XII-RPL-1" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">MATA PELAJARAN</label>
-                        <input type="text" id="guruMapel" placeholder="Contoh: Matematika / Produktif" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">KATEGORI PENILAIAN</label>
-                        <select id="guruJenis" class="border border-slate-300 p-2.5 rounded-lg w-full bg-white">
-                            <option value="Kehadiran Mapel">Kehadiran Jam Pelajaran</option>
-                            <option value="Tugas 1">Tugas 1</option>
-                            <option value="Tugas 2">Tugas 2</option>
-                            <option value="UTS">UTS (Ujian Tengah Semester)</option>
-                            <option value="UAS">UAS (Ujian Akhir Semester)</option>
-                        </select>
-                    </div>
-                </div>
-                <hr class="my-4 border-slate-200">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NIS MURID</label>
-                        <input type="text" id="guruNis" placeholder="NIS Murid" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NAMA MURID</label>
-                        <input type="text" id="guruNama" placeholder="Nama Murid" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">NILAI / SKOR ANGKA</label>
-                        <input type="number" id="guruNilai" placeholder="Rentang 0 - 100" class="border border-slate-300 p-2.5 rounded-lg w-full">
-                    </div>
-                </div>
-                <button onclick="simpanNilai()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg cursor-pointer shadow transition-all">Simpan Progress Nilai</button>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold mb-1 text-purple-600 flex items-center gap-2">📈 Peninjauan Pertumbuhan Murid (Coming Soon)</h3>
-                <p class="text-xs text-slate-400 mb-4">Fitur ini ke depan dirancang mudah di-update untuk menampilkan grafik perkembangan berdasarkan data di Google Sheets secara otomatis.</p>
-                <div class="flex flex-col md:flex-row gap-4 mb-4">
-                    <input type="text" id="cariNis" placeholder="Masukkan NIS Murid untuk ditinjau..." class="border border-slate-300 p-2.5 rounded-lg w-full focus:outline-none">
-                    <button onclick="alert('Fitur grafik ini sangat mudah ditambahkan nantinya karena letak kode dan datanya sudah teratur!')" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg cursor-pointer whitespace-nowrap shadow transition">Tampilkan Analisis Murid</button>
-                </div>
-                <div class="border-2 border-dashed border-slate-300 h-36 flex items-center justify-center text-slate-400 font-medium rounded-xl bg-slate-50">
-                    [ Area Visualisasi Grafik Perkembangan Nilai Murid ]
-                </div>
+        <div class="col-md-6">
+            <div class="card card-menu p-3 bg-white border-start border-success border-4" onclick="gantiMode('mapel')">
+                <h5 class="fw-bold text-success">📐 Mode Guru Mapel (Matematika)</h5>
+                <p class="text-muted small m-0">Input nilai, jurnal mengajar, dan rekam perkembangan kompetensi matematika.</p>
             </div>
         </div>
-
     </div>
 
-    <script>
-        // ==========================================
-        // ⚠️ ALAMAT JEMBATAN DATABASE KAMU
-        // ==========================================
-        // GANTI TULISAN DI BAWAH DENGAN URL WEB APP YANG KAMU COPY DARI SCREENSHOT TADI!
-        const BASE_URL = "https://script.google.com/macros/s/AKfycbwAbURcu_MjxHATs-y_jPG4BWmqWM1op0VQOaUDIpYHW79P7VqwVmkSjTkpIztr32IX/exec";
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-center">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">Pilih Kelas Penyaringan:</label>
+                <select class="form-select" id="pilihKelas" onchange="saringSiswa PerKelas()">
+                    <option value="">-- Memuat Kelas... --</option>
+                </select>
+            </div>
+            <div class="col-md-8 text-md-end mt-3 mt-md-0">
+                <span class="badge bg-secondary p-2" id="infoMode">Mode Terpilih: Wali Kelas</span>
+            </div>
+        </div>
+    </div>
 
-        // Fungsi Ganti Tampilan Mode Dashboard
-        function switchMode(mode) {
-            const secWali = document.getElementById("sectionWaliKelas");
-            const secGuru = document.getElementById("sectionGuru");
-            const btnWali = document.getElementById("btnWali");
-            const btnGuru = document.getElementById("btnGuru");
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+            <span>Daftar Siswa Kelolaan</span>
+            <button class="btn btn-sm btn-outline-light" onclick="muatDataSiswa()">🔄 Refresh Data</button>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr id="headerTabel">
+                        </tr>
+                </thead>
+                <tbody id="badanTabel">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Silahkan pilih kelas terlebih dahulu untuk menyaring data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-            if (mode === 'walikelas') {
-                secWali.classList.remove("hidden");
-                secGuru.classList.add("hidden");
-                btnWali.className = "px-4 py-2 rounded-md font-semibold bg-indigo-600 text-white shadow-md cursor-pointer transition-all duration-300";
-                btnGuru.className = "px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300";
+<script>
+    let modeAktif = 'wali'; // default mode
+
+    // 1. Ambil data dari Google Sheets saat web dibuka
+    async function muatDataSiswa() {
+        document.getElementById('badanTabel').innerHTML = `<tr><td colspan="5" class="text-center">Mengambil data dari Google Sheet...</td></tr>`;
+        try {
+            let respon = await fetch(API_URL);
+            let hasil = await respon.json();
+            if(hasil.status === 'success') {
+                semuaSiswa = hasil.data;
+                isiOpsiKelas();
             } else {
-                secWali.classList.add("hidden");
-                secGuru.classList.remove("hidden");
-                btnWali.className = "px-4 py-2 rounded-md font-semibold text-indigo-300 hover:text-white cursor-pointer transition-all duration-300";
-                btnGuru.className = "px-4 py-2 rounded-md font-semibold bg-emerald-600 text-white shadow-md cursor-pointer transition-all duration-300";
+                alert("Gagal memuat data: " + hasil.message);
             }
+        } catch (e) {
+            alert("Koneksi gagal ke server Google: " + e.toString());
+        }
+    }
+
+    // 2. Mengisi dropdown kelas secara otomatis tanpa duplikat
+    function isiOpsiKelas() {
+        let opsiKelas = [...new Set(semuaSiswa.map(s => s.kelas))];
+        let select = document.getElementById('pilihKelas');
+        select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        opsiKelas.forEach(k => {
+            select.innerHTML += `<option value="${k}">${k}</option>`;
+        });
+        saringSiswaPerKelas();
+    }
+
+    // 3. Mengubah mode (Wali Kelas vs Guru Mapel)
+    function gantiMode(mode) {
+        modeAktif = mode;
+        document.getElementById('infoMode').innerText = `Mode Terpilih: ${mode === 'wali' ? 'Wali Kelas' : 'Guru Mapel'}`;
+        document.getElementById('infoMode').className = `badge p-2 ${mode === 'wali' ? 'bg-primary' : 'bg-success'}`;
+        saringSiswaPerKelas();
+    }
+
+    // 4. Proses Penyaringan Data Otomatis per Kelas
+    function saringSiswaPerKelas() {
+        let kelasTerpilih = document.getElementById('pilihKelas').value;
+        let header = document.getElementById('headerTabel');
+        let badan = document.getElementById('badanTabel');
+
+        if (!kelasTerpilih) {
+            badan.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Silahkan pilih kelas terlebih dahulu untuk menyaring data.</td></tr>`;
+            return;
         }
 
-        // Fungsi Pengiriman Data ke Backend Google Apps Script via API JSON
-        async function kirimKeDatabase(actionName, dataPayload) {
-            if (BASE_URL === "URL_WEB_APP_KAMU_DI_SINI") {
-                alert("PENTING: Ubah dulu variabel BASE_URL di dalam file HTML ini menggunakan URL Web App Google Anda!");
-                return;
-            }
+        let siswaTersaring = semuaSiswa.filter(s => s.kelas === kelasTerpilih);
 
-            try {
-                // Memunculkan tanda proses sedang berjalan
-                const button = event.target;
-                const txtAwal = button.innerText;
-                button.innerText = "⏳ Sedang Menyimpan...";
-                button.disabled = true;
-
-                const respon = await fetch(BASE_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: actionName,
-                        data: dataPayload
-                    })
-                });
-                
-                const hasil = await respon.json();
-                alert("Hasil: " + hasil.message);
-                
-                // Mengembalikan tombol dan mengosongkan input jika sukses
-                button.innerText = txtAwal;
-                button.disabled = false;
-
-            } catch (error) {
-                console.error(error);
-                alert("Gagal terhubung dengan Database Google Sheets. Pastikan akses Web App diset ke 'Anyone'.");
-            }
+        // Render susunan tabel berdasarkan mode yang dipilih
+        if (modeAktif === 'wali') {
+            header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Status Presensi</th><th>Laporkan Ortu?</th><th>Aksi</th>`;
+            badan.innerHTML = '';
+            siswaTersaring.forEach(s => {
+                badan.innerHTML += `
+                    <tr>
+                        <td>${s.nis}</td>
+                        <td class="fw-bold">${s.nama}</td>
+                        <td>
+                            <select class="form-select form-select-sm" id="status-${s.nis}">
+                                <option value="Hadir">Hadir</option>
+                                <option value="Sakit">Sakit</option>
+                                <option value="Izin">Izin</option>
+                                <option value="Alpa">Alpa</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="wa-${s.nis}">
+                                <label class="form-check-label small">Kirim Notif WA</label>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="simpanAbsen('${s.nis}', '${s.nama}', '${s.kelas}', '${s.noHp}')">Simpan</button>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            // Mode Guru Mapel Matematika
+            header.innerHTML = `<th>NIS</th><th>Nama Siswa</th><th>Jenis Aktivitas</th><th>Nilai / Catatan Jurnal</th><th>Aksi</th>`;
+            badan.innerHTML = '';
+            siswaTersaring.forEach(s => {
+                badan.innerHTML += `
+                    <tr>
+                        <td>${s.nis}</td>
+                        <td class="fw-bold">${s.nama}</td>
+                        <td>
+                            <select class="form-select form-select-sm" id="jenis-${s.nis}">
+                                <option value="Tugas Harian">Tugas Harian</option>
+                                <option value="Ujian Harian">Ujian Harian</option>
+                                <option value="Jurnal Keaktifan">Jurnal Keaktifan (Catatan)</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm" id="nilai-${s.nis}" placeholder="Contoh: 85 atau Pasif di kelas">
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-success" onclick="simpanNilam('${s.nis}', '${s.nama}', '${s.kelas}')">Input</button>
+                        </td>
+                    </tr>`;
+            });
         }
+    }
 
-        // FUNGSI 1: WALI KELAS - DAFTAR SISWA BARU
-        function tambahSiswa() {
-            const payload = {
-                nis: document.getElementById("waliNis").value,
-                nama: document.getElementById("waliNama").value,
-                kelas: document.getElementById("waliKelas").value
-            };
-            
-            if(!payload.nis || !payload.nama || !payload.kelas) return alert("Mohon lengkapi semua kolom pendaftaran!");
-            kirimKeDatabase("tambahSiswa", payload);
-        }
+    // 5. Fungsi Mengirim Data Absen & Trigger WhatsApp Otomatis
+    async function simpanAbsen(nis, nama, kelas, noHp) {
+        let status = document.getElementById(`status-${nis}`).value;
+        let kirimWa = document.getElementById(`wa-${nis}`).checked;
 
-        // FUNGSI 2: WALI KELAS - INPUT ABSENSI HARIAN
-        function simpanAbsenHarian() {
-            const payload = {
-                kelas: document.getElementById("absKelas").value,
-                nis: document.getElementById("absNis").value,
-                nama: document.getElementById("absNama").value,
-                status: document.getElementById("absStatus").value
-            };
-            
-            if(!payload.kelas || !payload.nis || !payload.nama) return alert("Mohon lengkapi data absensi siswa!");
-            kirimKeDatabase("simpanAbsenHarian", payload);
-        }
+        let dataKirim = {
+            action: "simpanAbsenHarian",
+            data: { nis: nis, nama: nama, kelas: kelas, status: status, notifWa: kirimWa }
+        };
 
-        // FUNGSI 3: GURU MAPEL - INPUT NILAI & ABSEN PROGRESS
-        function simpanNilai() {
-            const payload = {
-                kelas: document.getElementById("guruKelas").value,
-                mapel: document.getElementById("guruMapel").value,
-                jenis: document.getElementById("guruJenis").value,
-                nis: document.getElementById("guruNis").value,
-                nama: document.getElementById("guruNama").value,
-                nilai: document.getElementById("guruNilai").value
-            };
-            
-            if(!payload.kelas || !payload.mapel || !payload.nis || !payload.nama || !payload.nilai) return alert("Mohon isi semua kolom nilai perkembangan!");
-            kirimKeDatabase("simpanProgressMapel", payload);
+        // Kirim ke Google Sheet
+        alert("Menyimpan ke Google Sheets...");
+        await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
+
+        // Jika opsi Laporkan via WA dicentang, jalankan sistem WhatsApp otomatis
+        if (kirimWa && (status === 'Alpa' || status === 'Sakit' || status === 'Izin')) {
+            let pesan = `Yth. Orang tua/Wali dari ${nama}. Menginfokan bahwa pada hari ini siswa bersangkutan tercatat *${status}* pada absensi kelas ${kelas}. Terima kasih.`;
+            let urlWa = `https://api.whatsapp.com/send?phone=${noHp}&text=${encodeURIComponent(pesan)}`;
+            window.open(urlWa, '_blank'); // Otomatis membuka aplikasi WA / WA Web
         }
-    </script>
+        
+        alert(`Data absensi ${nama} sukses tersimpan!`);
+    }
+
+    // 6. Fungsi Menyimpan Nilai/Jurnal Mapel Matematika
+    async function simpanNilam(nis, nama, kelas) {
+        let jenis = document.getElementById(`jenis-${nis}`).value;
+        let nilai = document.getElementById(`nilai-${nis}`).value;
+
+        if(!nilai) return alert("Isi nilai atau catatan terlebih dahulu!");
+
+        let dataKirim = {
+            action: "simpanProgressMapel",
+            data: { nis: nis, nama: nama, kelas: kelas, mapel: "Matematika", jenis: jenis, nilai: nilai }
+        };
+
+        alert("Menyimpan data perkembangan...");
+        await fetch(API_URL, { method: "POST", body: JSON.stringify(dataKirim) });
+        alert(`Data ${jenis} untuk ${nama} berhasil direkam!`);
+        document.getElementById(`nilai-${nis}`).value = "";
+    }
+
+    // Jalankan otomatis saat web pertama kali dibuka
+    window.onload = muatDataSiswa;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
