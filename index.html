@@ -9,74 +9,217 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
 
-  <div id="tampilan-dashboard" class="max-w-4xl mx-auto px-4 py-12">
-    <div class="text-center mb-12">
-      <div class="w-24 h-24 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-white font-bold text-3xl shadow-md mb-4">
-        <span>AG</span>
+  <!-- ================= KONTANER FORM LOGIN ================= -->
+  <div id="loginContainer" class="max-w-md mx-auto px-4 py-24">
+    <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-md">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-white font-bold text-2xl shadow-sm mb-3">
+          <span>AG</span>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Login Sistem Sekolah</h2>
+        <p class="text-slate-500 mt-1 text-xs">Silakan masuk untuk mengakses basis data Anda</p>
       </div>
-      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">aplikasi-guru-2mode</h1>
-      <p class="text-slate-500 mt-2 text-sm md:text-base">Sistem Informasi Administrasi & Guru Terintegrasi</p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <button onclick="pindahHalaman('master')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-500 transition-all text-center group">
-        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-2.21 8-4V7M4 7c0 2.21 3.58 4 8 4s8-2.21 8-4M4 7c0-2.21 3.58-4 8-4s8 2.21 8 4m0 5c0 2.21-3.58 4-8 4s-8-2.21-8-4"></path></svg>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Username</label>
+          <input type="text" id="username" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan username">
         </div>
-        <span class="font-bold text-lg text-slate-800">Master Data</span>
-        <span class="text-xs text-slate-400 mt-1">Kelola Data Siswa, Guru, & Kelas</span>
-      </button>
-
-      <button onclick="pindahHalaman('walikelas')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-500 transition-all text-center group">
-        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <input type="password" id="password" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500 transition-colors" placeholder="••••••••">
         </div>
-        <span class="font-bold text-lg text-slate-800">Walikelas</span>
-        <span class="text-xs text-slate-400 mt-1">Laporan & Catatan Perkembangan Kelas</span>
-      </button>
-
-      <button onclick="pindahHalaman('mapel')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-amber-500 transition-all text-center group">
-        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-        </div>
-        <span class="font-bold text-lg text-slate-800">Guru Mapel</span>
-        <span class="text-xs text-slate-400 mt-1">Input Nilai & Presensi Mata Pelajaran</span>
-      </button>
-
-      <button onclick="pindahHalaman('administrasi')" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-purple-500 transition-all text-center group">
-        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        </div>
-        <span class="font-bold text-lg text-slate-800">Administrasi Guru</span>
-        <span class="text-xs text-slate-400 mt-1">Perangkat Pembelajaran, RPP, & Silabus</span>
-      </button>
+        <button onclick="prosesLogin()" class="w-full bg-blue-600 text-white text-sm py-2.5 rounded-lg font-bold hover:bg-blue-700 shadow-sm transition-colors mt-2">
+          Masuk Ke Sistem
+        </button>
+        <p id="pesanLogin" class="text-xs text-red-500 text-center font-medium mt-2 min-h-[16px]"></p>
+      </div>
     </div>
   </div>
 
-  <div id="tampilan-menu" class="hidden max-w-4xl mx-auto px-4 py-12">
-    <button onclick="kembaliKeDashboard()" class="mb-6 flex items-center text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
-      <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-      Kembali ke Dashboard
-    </button>
-    <div id="konten-spesifik" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"></div>
+  <!-- ================= KONTANER UTAMA APLIKASI ================= -->
+  <div id="aplikasiUtamaContainer" class="hidden">
+    
+    <!-- HEADER BAR SALAM -->
+    <div class="bg-white border-b border-slate-200">
+      <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+        <span id="namaUserAktif" class="text-xs font-bold text-slate-600 uppercase tracking-wider"></span>
+        <button onclick="prosesLogout()" class="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors flex items-center gap-1">
+          Keluar <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAMPILAN DASHBOARD UTAMA -->
+    <div id="tampilan-dashboard" class="max-w-4xl mx-auto px-4 py-12">
+      <div class="text-center mb-12">
+        <div class="w-24 h-24 bg-blue-600 rounded-full mx-auto flex items-center justify-center text-white font-bold text-3xl shadow-md mb-4">
+          <span>AG</span>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">aplikasi-guru-2mode</h1>
+        <p class="text-slate-500 mt-2 text-sm md:text-base">Sistem Informasi Administrasi & Guru Terintegrasi</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <button onclick="pindahHalaman('master')" id="btnMenuMaster" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-500 transition-all text-center group">
+          <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.58 4 8 4s8-2.21 8-4V7M4 7c0 2.21 3.58 4 8 4s8-2.21 8-4M4 7c0-2.21 3.58-4 8-4s8 2.21 8 4m0 5c0 2.21-3.58 4-8 4s-8-2.21-8-4"></path></svg>
+          </div>
+          <span class="font-bold text-lg text-slate-800">Master Data</span>
+          <span class="text-xs text-slate-400 mt-1">Kelola Data Siswa, Guru, & Kelas</span>
+        </button>
+
+        <button onclick="pindahHalaman('walikelas')" id="btnMenuWalikelas" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-500 transition-all text-center group">
+          <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          </div>
+          <span class="font-bold text-lg text-slate-800">Walikelas</span>
+          <span class="text-xs text-slate-400 mt-1">Laporan & Catatan Perkembangan Kelas</span>
+        </button>
+
+        <button onclick="pindahHalaman('mapel')" id="btnMenuMapel" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-amber-500 transition-all text-center group">
+          <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-600 group-hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.782 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <span class="font-bold text-lg text-slate-800">Guru Mapel</span>
+          <span class="text-xs text-slate-400 mt-1">Input Nilai & Presensi Mata Pelajaran</span>
+        </button>
+
+        <button onclick="pindahHalaman('administrasi')" id="btnMenuAdministrasi" class="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-purple-500 transition-all text-center group">
+          <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <span class="font-bold text-lg text-slate-800">Administrasi Guru</span>
+          <span class="text-xs text-slate-400 mt-1">Perangkat Pembelajaran, RPP, & Silabus</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TAMPILAN HALAMAN SUB MENU -->
+    <div id="tampilan-menu" class="hidden max-w-4xl mx-auto px-4 py-12">
+      <button onclick="kembaliKeDashboard()" class="mb-6 flex items-center text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">
+        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Kembali ke Dashboard
+      </button>
+      <div id="konten-spesifik" class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"></div>
+    </div>
+
   </div>
 
+  <!-- ================= LOGIKA SISTEM INTEGRASI ================= -->
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzIVCcBzE5npBPGYmAm2naJNqBM3166aECxsyIjNwNVNDevobIQ7rf5mLIwYDdcEcCGlg/exec";
+    // URL Dipecah Berdasarkan Kebutuhan Modul Database Anda
+    const URL_MASTER_LOGIN = "https://script.google.com/macros/s/AKfycbwLG86KkBDecEK5pVhs9UNO34Z-UoI9iCac08XNEqbMjKoxEZk5tRm8sT3qMMqMcAX5yg/exec";
+    const URL_TEMPLATE_GURU = "https://script.google.com/macros/s/AKfycbzIVCcBzE5npBPGYmAm2naJNqBM3166aECxsyIjNwNVNDevobIQ7rf5mLIwYDdcEcCGlg/exec";
+    
+    // Sesi Data Global Multi-User
+    let userAktif = {
+      nama: "",
+      role: "",
+      spreadsheetId: ""
+    };
+
     let memoriSiswaPerKelas = [];
     let daftarSemuaKelas = []; 
     let menuAktifSaatIni = "";
     let statusSemuaWa = true; 
 
-    // Fungsi pemicu saat tombol menu di-klik oleh pengguna
+    // ================= FUNGSI AUTHENTICATION (LOGIN/LOGOUT) =================
+
+    function prosesLogin() {
+      const userIn = document.getElementById("username").value.trim();
+      const passIn = document.getElementById("password").value.trim();
+      const pesan = document.getElementById("pesanLogin");
+
+      if (!userIn || !passIn) {
+        pesan.innerText = "Username dan Password wajib diisi!";
+        return;
+      }
+
+      pesan.className = "text-xs text-blue-500 text-center font-medium mt-2 animate-pulse";
+      pesan.innerText = "Memverifikasi akun...";
+
+      // bypass kirim langsung aksi login ke Master Data Login
+      fetch(URL_MASTER_LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "login",
+          username: userIn,
+          password: passIn
+        })
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === "success") {
+          // Commit data sesi ke global variable
+          userAktif.nama = response.profil.nama;
+          userAktif.role = response.profil.role;
+          userAktif.spreadsheetId = response.profil.spreadsheetId;
+
+          // Transisi tampilan antarmuka
+          document.getElementById("loginContainer").classList.add("hidden");
+          document.getElementById("aplikasiUtamaContainer").classList.remove("hidden");
+          pesan.innerText = "";
+          
+          batasiMenuBerdasarkanRole();
+
+          // Periksa hash awal jika ada tautan spesifik
+          const hash = window.location.hash.replace("#", "");
+          if (hash) {
+            eksekusiRenderMenu(hash);
+          }
+        } else {
+          pesan.className = "text-xs text-red-500 text-center font-medium mt-2";
+          pesan.innerText = response.message;
+        }
+      })
+      .catch(err => {
+        pesan.className = "text-xs text-red-500 text-center font-medium mt-2";
+        pesan.innerText = "Gagal terhubung ke server auth.";
+        console.error(err);
+      });
+    }
+
+    function prosesLogout() {
+      userAktif = { nama: "", role: "", spreadsheetId: "" };
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      window.location.hash = "";
+      
+      document.getElementById("aplikasiUtamaContainer").classList.add("hidden");
+      document.getElementById("loginContainer").classList.remove("hidden");
+    }
+
+    function batasiMenuBerdasarkanRole() {
+      document.getElementById("namaUserAktif").innerText = `Selamat Datang, ${userAktif.nama} (${userAktif.role.toUpperCase()})`;
+      
+      // Reset Default State Menu Dashboard
+      document.getElementById("btnMenuMaster").classList.remove("hidden");
+      document.getElementById("btnMenuWalikelas").classList.remove("hidden");
+
+      if (userAktif.role === "guru") {
+        document.getElementById("btnMenuMaster").classList.add("hidden");
+      } else if (userAktif.role === "walas") {
+        // Hak Akses Khusus Walas (jika ada batasan spesifik dikemudian hari)
+      }
+    }
+
+    // ================= SINKRONISASI ROUTING & INTERFACE HASH =================
+
     function pindahHalaman(jenisMenu) {
-      // Mengubah URL hash di browser secara otomatis (misal: #master atau #walikelas)
+      if (!userAktif.spreadsheetId) return;
       window.location.hash = jenisMenu;
       eksekusiRenderMenu(jenisMenu);
     }
 
-    // Fungsi inti untuk menampilkan isi konten menu
     function eksekusiRenderMenu(jenisMenu) {
+      if (!userAktif.spreadsheetId) {
+        document.getElementById("aplikasiUtamaContainer").classList.add("hidden");
+        document.getElementById("loginContainer").classList.remove("hidden");
+        return;
+      }
+
       const dashboard = document.getElementById('tampilan-dashboard');
       const halamanMenu = document.getElementById('tampilan-menu');
       const kontenSpesifik = document.getElementById('konten-spesifik');
@@ -108,7 +251,7 @@
           <div class="border-b border-slate-100 pb-4 mb-6 flex flex-wrap justify-between items-center gap-2">
             <div>
               <h2 class="text-2xl font-bold text-emerald-600">Menu Walikelas</h2>
-              <p class="text-slate-500 text-sm mt-1">Kelola kelas bimbingan Anda, input profil lengkap, dan absensi.</p>
+              <p class="text-slate-500 text-sm mt-1">Kelola kelas bimbingan Anda, input profil lengkap, and absensi.</p>
             </div>
             <div class="flex flex-wrap gap-2">
               <button onclick="pilihSubWalikelas('profil')" id="btn-wali-profil" class="bg-emerald-600 text-white font-medium px-3 py-2 rounded-lg text-xs shadow-sm transition-colors">Tambah Siswa Lengkap</button>
@@ -126,7 +269,7 @@
     }
 
     function kembaliKeDashboard() {
-      window.location.hash = ""; // Membersihkan tanda hash di alamat browser
+      window.location.hash = "";
       document.getElementById('tampilan-dashboard').classList.remove('hidden');
       document.getElementById('tampilan-menu').classList.add('hidden');
       menuAktifSaatIni = "";
@@ -774,9 +917,15 @@
       });
     }
 
+    // ================= DRIVER UTAMA KOMUNIKASI CLOUD GAS =================
+
     function kirimKeGoogleAppScript(action, payload, callback) {
       payload.action = action;
-      fetch(WEB_APP_URL, {
+      // Otomatis menyuntikkan ID Spreadsheet target milik user aktif disetiap request database
+      payload.userSpreadsheetId = userAktif.spreadsheetId;
+
+      // Diarahkan menggunakan URL database guru/absensi (URL_TEMPLATE_GURU)
+      fetch(URL_TEMPLATE_GURU, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
@@ -791,26 +940,21 @@
 
     // ================= DETEKSI NAVIGASI OTOMATIS BROWSER (HASH LISTENERS) =================
 
-    // Listener 1: Memeriksa perubahan hash ketika tombol Back/Forward browser ditekan
     window.addEventListener("hashchange", function() {
+      if (!userAktif.spreadsheetId) return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) {
-        // Jika hash kosong kembali ke dashboard utama
         document.getElementById('tampilan-dashboard').classList.remove('hidden');
         document.getElementById('tampilan-menu').classList.add('hidden');
         menuAktifSaatIni = "";
       } else if (hash !== menuAktifSaatIni) {
-        // Jika mendeteksi hash baru, jalankan render kontennya
         eksekusiRenderMenu(hash);
       }
     });
 
-    // Listener 2: Memeriksa hash saat halaman pertama kali dibuka / di-refresh oleh user (F5)
     window.addEventListener("DOMContentLoaded", function() {
-      const hash = window.location.hash.replace("#", "");
-      if (hash) {
-        eksekusiRenderMenu(hash);
-      }
+      // Halaman selalu dimulai di form login kosong demi keamanan sesi variabel memori
+      window.location.hash = "";
     });
   </script>
 </body>
